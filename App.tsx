@@ -8,7 +8,8 @@ import {
   Menu,
   Lock,
 } from 'lucide-react';
-import { ViewRole, User } from './types';
+import { ViewRole, User, UserRole, Permission } from './types';
+import { hasPermission } from './security/AccessControl';
 import HQView from './views/HQView';
 import RegionalView from './views/RegionalView';
 import SquadronView from './views/SquadronView';
@@ -21,10 +22,33 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewRole>(ViewRole.HQ);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Map the 10 System Roles to the 5 Available UI Dashboards
+  const getDashboardViewForRole = (role: UserRole): ViewRole => {
+    switch(role) {
+        case UserRole.BOARD_OF_DIRECTORS:
+        case UserRole.EXTERNAL_AUDITOR:
+        case UserRole.EXECUTIVE_STAFF:
+        case UserRole.CFO_TREASURER:
+        case UserRole.SUPPORT_STAFF:
+            return ViewRole.HQ;
+        case UserRole.REGIONAL_COMMANDER:
+            return ViewRole.REGIONAL;
+        case UserRole.SQUADRON_COMMANDER:
+        case UserRole.REVIEWER_INSTRUCTOR:
+            return ViewRole.SQUADRON;
+        case UserRole.CADET_MEMBER:
+            return ViewRole.CADET;
+        case UserRole.PARENT_GUARDIAN:
+            return ViewRole.PARENT;
+        default:
+            return ViewRole.HQ;
+    }
+  };
+
   const handleLogin = (authenticatedUser: User) => {
     setUser(authenticatedUser);
-    // Set initial view based on user role
-    setCurrentView(authenticatedUser.role);
+    // Set initial view based on mapped role
+    setCurrentView(getDashboardViewForRole(authenticatedUser.role));
   };
 
   const handleLogout = () => {
@@ -32,9 +56,9 @@ const App: React.FC = () => {
     setCurrentView(ViewRole.HQ);
   };
 
-  const NavItem = ({ role, icon: Icon, label }: { role: ViewRole; icon: any; label: string }) => {
-    // Only render nav item if user is allowed to access it
-    if (!user?.allowedViews.includes(role)) return null;
+  const NavItem = ({ permission, role, icon: Icon, label }: { permission: Permission; role: ViewRole; icon: any; label: string }) => {
+    // Only render nav item if user has the specific permission
+    if (!user || !hasPermission(user, permission)) return null;
 
     return (
       <button
@@ -56,7 +80,18 @@ const App: React.FC = () => {
 
   const renderView = () => {
     // Security Guard: Prevent rendering if user is not authorized for this view
-    if (user && !user.allowedViews.includes(currentView)) {
+    // We map the requested ViewRole back to a required Permission
+    let requiredPermission: Permission;
+    switch (currentView) {
+        case ViewRole.HQ: requiredPermission = Permission.VIEW_HQ_DASHBOARD; break;
+        case ViewRole.REGIONAL: requiredPermission = Permission.VIEW_REGIONAL_DASHBOARD; break;
+        case ViewRole.SQUADRON: requiredPermission = Permission.VIEW_SQUADRON_DASHBOARD; break;
+        case ViewRole.CADET: requiredPermission = Permission.VIEW_CADET_DASHBOARD; break;
+        case ViewRole.PARENT: requiredPermission = Permission.VIEW_PARENT_DASHBOARD; break;
+        default: requiredPermission = Permission.VIEW_HQ_DASHBOARD;
+    }
+
+    if (user && !hasPermission(user, requiredPermission)) {
         return (
             <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)] text-zinc-500 animate-in fade-in zoom-in-95">
                 <div className="p-6 bg-red-500/5 rounded-full mb-6 border border-red-500/20">
@@ -64,7 +99,7 @@ const App: React.FC = () => {
                 </div>
                 <h2 className="text-3xl font-bold uppercase tracking-widest text-white mb-2">Access Denied</h2>
                 <p className="font-mono text-sm uppercase tracking-wider text-red-400">Insufficient Security Clearance</p>
-                <p className="text-xs text-zinc-600 mt-4 font-mono">Error Code: 403_FORBIDDEN | User: {user.username}</p>
+                <p className="text-xs text-zinc-600 mt-4 font-mono">Error Code: 403_FORBIDDEN | Role: {user.role}</p>
             </div>
         );
     }
@@ -75,7 +110,7 @@ const App: React.FC = () => {
       case ViewRole.SQUADRON: return <SquadronView />;
       case ViewRole.CADET: return <CadetView />;
       case ViewRole.PARENT: return <ParentView />;
-      default: return <div className="p-10 text-center text-zinc-500">Access Denied</div>;
+      default: return <div className="p-10 text-center text-zinc-500">View Not Found</div>;
     }
   };
 
@@ -117,15 +152,15 @@ const App: React.FC = () => {
         <div className="flex-1 py-6 overflow-y-auto">
           <div className="px-4 mb-2">
             <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-2">
-              {user.role === ViewRole.HQ ? 'Global Command' : 'My Dashboard'}
+              Menu
             </p>
           </div>
           <nav className="space-y-0.5">
-            <NavItem role={ViewRole.HQ} icon={LayoutDashboard} label="HQ Dashboard" />
-            <NavItem role={ViewRole.REGIONAL} icon={Map} label="Regional View" />
-            <NavItem role={ViewRole.SQUADRON} icon={Users} label="Squadron View" />
-            <NavItem role={ViewRole.CADET} icon={UserCircle2} label="Cadet Profile" />
-            <NavItem role={ViewRole.PARENT} icon={Users} label="Parent Portal" />
+            <NavItem permission={Permission.VIEW_HQ_DASHBOARD} role={ViewRole.HQ} icon={LayoutDashboard} label="HQ Dashboard" />
+            <NavItem permission={Permission.VIEW_REGIONAL_DASHBOARD} role={ViewRole.REGIONAL} icon={Map} label="Regional View" />
+            <NavItem permission={Permission.VIEW_SQUADRON_DASHBOARD} role={ViewRole.SQUADRON} icon={Users} label="Squadron View" />
+            <NavItem permission={Permission.VIEW_CADET_DASHBOARD} role={ViewRole.CADET} icon={UserCircle2} label="Cadet Profile" />
+            <NavItem permission={Permission.VIEW_PARENT_DASHBOARD} role={ViewRole.PARENT} icon={Users} label="Parent Portal" />
           </nav>
         </div>
 

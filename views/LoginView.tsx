@@ -1,51 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, ChevronRight, AlertCircle, Eye, EyeOff, Terminal } from 'lucide-react';
-import { User, ViewRole } from '../types';
+import { User, UserRole } from '../types';
+import { hydrateUserPermissions } from '../security/AccessControl';
 
 interface LoginViewProps {
   onLogin: (user: User) => void;
 }
 
+// Task 1: Define the 10 System Roles (Mock Users)
 const MOCK_USERS: Record<string, User> = {
-  'hq': {
-    id: 'u-001',
-    username: 'hq',
-    name: 'Gen. A. Smith',
-    role: ViewRole.HQ,
-    accessLevel: 'L5',
-    allowedViews: [ViewRole.HQ] // STRICT: Only HQ Dashboard
+  // 1. Board
+  'board': {
+    id: 'u-001', username: 'board', name: 'Chairperson Vance', role: UserRole.BOARD_OF_DIRECTORS, accessLevel: 'L5',
   },
+  // 2. Auditor
+  'auditor': {
+    id: 'u-002', username: 'auditor', name: 'Ext. Audit Firm', role: UserRole.EXTERNAL_AUDITOR, accessLevel: 'L5',
+  },
+  // 3. Exec Staff
+  'exec': {
+    id: 'u-003', username: 'exec', name: 'Gen. A. Smith', role: UserRole.EXECUTIVE_STAFF, accessLevel: 'L5',
+  },
+  // 4. CFO
+  'cfo': {
+    id: 'u-004', username: 'cfo', name: 'Treas. J. Bond', role: UserRole.CFO_TREASURER, accessLevel: 'L5',
+  },
+  // 5. Support
+  'support': {
+    id: 'u-005', username: 'support', name: 'Tech. SysAdmin', role: UserRole.SUPPORT_STAFF, accessLevel: 'L4',
+  },
+  // 6. Regional Cmd
   'regional': {
-    id: 'u-002',
-    username: 'regional',
-    name: 'Col. B. Miller',
-    role: ViewRole.REGIONAL,
-    accessLevel: 'L4',
-    allowedViews: [ViewRole.REGIONAL] // STRICT: Only Regional Dashboard
+    id: 'u-006', username: 'regional', name: 'Col. B. Miller', role: UserRole.REGIONAL_COMMANDER, accessLevel: 'L4',
+    assignedRegionId: 'REG-NE'
   },
+  // 7. Squadron Cmd
   'squadron': {
-    id: 'u-003',
-    username: 'squadron',
-    name: 'Maj. C. Davis',
-    role: ViewRole.SQUADRON,
-    accessLevel: 'L3',
-    allowedViews: [ViewRole.SQUADRON] // STRICT: Only Squadron Dashboard
+    id: 'u-007', username: 'squadron', name: 'Maj. C. Davis', role: UserRole.SQUADRON_COMMANDER, accessLevel: 'L3',
+    assignedRegionId: 'REG-NE', assignedSquadronId: 'SQ-101'
   },
+  // 8. Instructor
+  'instructor': {
+    id: 'u-008', username: 'instructor', name: 'Lt. T. Teacher', role: UserRole.REVIEWER_INSTRUCTOR, accessLevel: 'L2',
+    assignedRegionId: 'REG-NE', assignedSquadronId: 'SQ-101'
+  },
+  // 9. Cadet
   'cadet': {
-    id: 'u-004',
-    username: 'cadet',
-    name: 'Cdt. E. Ender',
-    role: ViewRole.CADET,
-    accessLevel: 'L1',
-    allowedViews: [ViewRole.CADET] // STRICT: Only Cadet Dashboard
+    id: 'u-009', username: 'cadet', name: 'Cdt. E. Ender', role: UserRole.CADET_MEMBER, accessLevel: 'L1',
+    linkedCadetId: 'u-009'
   },
+  // 10. Parent
   'parent': {
-    id: 'u-005',
-    username: 'parent',
-    name: 'Mrs. Ender',
-    role: ViewRole.PARENT,
-    accessLevel: 'L1',
-    allowedViews: [ViewRole.PARENT] // STRICT: Only Parent Dashboard
+    id: 'u-010', username: 'parent', name: 'Mrs. Ender', role: UserRole.PARENT_GUARDIAN, accessLevel: 'L1',
+    linkedCadetId: 'u-009'
   }
 };
 
@@ -85,8 +92,9 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
       setTimeout(() => {
         if (MOCK_USERS[username] && (password === 'password' || password === 'secure')) {
           setStatusText('ACCESS GRANTED. ESTABLISHING SESSION...');
+          const hydratedUser = hydrateUserPermissions(MOCK_USERS[username]);
           setTimeout(() => {
-             onLogin(MOCK_USERS[username]);
+             onLogin(hydratedUser);
           }, 800);
         } else {
           setLoading(false);
@@ -221,7 +229,8 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
              <div className="inline-block text-left bg-zinc-900/50 border border-zinc-800 p-4 rounded text-[10px] text-zinc-500 font-mono">
                 <p className="font-bold text-zinc-400 mb-2 uppercase border-b border-zinc-800 pb-1">Demo Credentials (pwd: password)</p>
                 <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-                   <span>HQ: <span className="text-blue-400">hq</span></span>
+                   <span>Board: <span className="text-blue-400">board</span></span>
+                   <span>Exec: <span className="text-blue-400">exec</span></span>
                    <span>Regional: <span className="text-blue-400">regional</span></span>
                    <span>Squadron: <span className="text-blue-400">squadron</span></span>
                    <span>Cadet: <span className="text-blue-400">cadet</span></span>
