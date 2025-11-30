@@ -181,9 +181,16 @@ const App: React.FC = () => {
         {/* Top Status Bar (Desktop) */}
         <div className="hidden lg:flex items-center justify-between px-8 py-2 border-b border-sfcc-border bg-sfcc-panel/50 backdrop-blur-sm z-30 h-10">
            <div className="flex gap-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-              <span>System: <span className="text-blue-500">Online</span></span>
-              <span>Encrypted: <span className="text-blue-500">AES-256</span></span>
-              <span>Session: <span className="text-zinc-300">{user.id}</span></span>
+              <span className="flex items-center gap-1.5">
+                SYSTEM: <span className="text-emerald-500 font-bold">ONLINE</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                CONNECTION: <span className="text-emerald-500 font-bold">ENCRYPTED (TLS)</span>
+                <Lock size={10} className="text-emerald-500" />
+              </span>
+              <span className="flex items-center gap-1.5">
+                SESSION: <span className="text-zinc-300">15 MIN</span>
+              </span>
            </div>
            <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest border px-2 py-0.5 border-zinc-700 rounded-sm">
               Term: Fall 2023

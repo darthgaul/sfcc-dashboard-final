@@ -1,14 +1,12 @@
 import React from 'react';
 import { User, CheckSquare, AlertCircle, ChevronRight } from 'lucide-react';
-import { MetricCard, Card, SectionHeader, SecurityStatusCard } from '../components/Shared';
+import { MetricCard, Card, SectionHeader, SecurityBadges } from '../components/Shared';
 
 const ParentView: React.FC = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <SectionHeader title="Parent Dashboard" subtitle="Secure Connection • Neutral Portfolio v2.5" />
-
-      {/* Security Status Section */}
-      <SecurityStatusCard />
+      <SecurityBadges />
 
       {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

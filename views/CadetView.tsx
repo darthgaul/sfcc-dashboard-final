@@ -1,14 +1,21 @@
 import React from 'react';
 import { Target, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { Card, SectionHeader, Badge, SecurityStatusCard } from '../components/Shared';
+import { Card, SectionHeader, Badge, SecurityBadges } from '../components/Shared';
 
 const CadetView: React.FC = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <SectionHeader title="Cadet Dashboard" subtitle="Secure Connection • Neutral Portfolio v2.5" />
+      <SecurityBadges />
 
-      {/* Security Status Section */}
-      <SecurityStatusCard />
+      {/* Alert Banner - Critical Remediation */}
+      <div className="border border-red-500/30 bg-red-900/10 p-4 rounded-sm flex items-start gap-3 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
+        <AlertTriangle className="text-red-500 shrink-0 mt-0.5" size={20} />
+        <div>
+          <h3 className="text-red-500 font-bold uppercase text-sm tracking-wide">Action Required: Remediation</h3>
+          <p className="text-zinc-400 text-sm mt-1">You have 1 artifact(s) that scored below the minimum (2/4). Please revise and resubmit per CCR 20-7.</p>
+        </div>
+      </div>
 
       {/* Profile & Main Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -52,7 +59,7 @@ const CadetView: React.FC = () => {
                   <div className="absolute left-[3px] top-2 bottom-2 w-px bg-zinc-700"></div>
                   {[
                     { rank: 'C/Sgt', date: 'Dec 15, 2023', active: true },
-                    { rank: 'C/SSgt', date: 'Oct 01, 2023', active: false },
+                    { rank: 'C/SSgt', date: 'Oct 1, 2023', active: false },
                     { rank: 'C/SrA', date: 'Feb 15, 2023', active: false },
                   ].map((log, i) => (
                     <div key={i} className="flex justify-between items-center text-sm relative pl-4">
@@ -93,15 +100,6 @@ const CadetView: React.FC = () => {
                </div>
              </div>
           </Card>
-        </div>
-      </div>
-
-      {/* Alert Banner */}
-      <div className="border border-red-500/30 bg-red-900/10 p-4 rounded-sm flex items-start gap-3">
-        <AlertTriangle className="text-red-500 shrink-0 mt-0.5" size={20} />
-        <div>
-          <h3 className="text-red-500 font-bold uppercase text-sm tracking-wide">Action Required: Remediation</h3>
-          <p className="text-zinc-400 text-sm mt-1">You have 1 artifact(s) that scored below the minimum (2/4). Please revise and resubmit per CCR 20-7.</p>
         </div>
       </div>
 
