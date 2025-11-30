@@ -23,7 +23,7 @@ const ParentView: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/consent/sign', {
+      const response = await fetch('https://sfcc-dashboard-final.onrender.com/api/consent/sign', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
