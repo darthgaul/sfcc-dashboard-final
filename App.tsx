@@ -14,7 +14,7 @@ import HQView from './views/HQView';
 import RegionalView from './views/RegionalView';
 import SquadronView from './views/SquadronView';
 import CadetView from './views/CadetView';
-import ParentView from './views/ParentView';
+import ParentView from './components/ParentView';
 import LoginView from './views/LoginView';
 
 const App: React.FC = () => {
