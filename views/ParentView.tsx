@@ -12,7 +12,7 @@ const ParentView: React.FC = () => {
 
       {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <MetricCard icon={User} label="Cadet Rank" value="C/SSgt" subtext="Staff Sergeant" />
+        <MetricCard icon={User} label="Cadet Rank" value="C/Sgt" subtext="Cadet Sergeant" />
         <MetricCard icon={CheckSquare} label="Approved Artifacts" value="2" subtext="Evidence Items" />
         <MetricCard icon={AlertCircle} label="Pending Action" value="1" subtext="Items needing attention" alert />
       </div>

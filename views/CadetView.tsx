@@ -20,12 +20,9 @@ const CadetView: React.FC = () => {
           <div className="flex flex-col items-center text-center">
             <div className="w-32 h-40 bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center mb-4 relative shadow-inner">
                <span className="text-2xl font-bold text-zinc-600">Cadet</span>
-               <div className="absolute -bottom-3 -right-3 bg-zinc-900 rounded-full border border-zinc-600 w-10 h-10 flex items-center justify-center text-[10px] font-bold text-zinc-300">
-                 SSgt
-               </div>
             </div>
-            <h2 className="text-2xl font-bold text-white">C/SSgt</h2>
-            <p className="text-xs font-mono tracking-[0.2em] text-zinc-500 uppercase mt-1">Staff Sergeant</p>
+            <h2 className="text-2xl font-bold text-white">C/Sgt</h2>
+            <p className="text-xs font-mono tracking-[0.2em] text-zinc-500 uppercase mt-1">Cadet Sergeant</p>
           </div>
         </div>
 
@@ -40,16 +37,23 @@ const CadetView: React.FC = () => {
                </div>
              </div>
              
-             <Card className="h-full border-t-0 border-l border-r-0 border-b-0 border-zinc-700 bg-transparent px-4 py-2">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4 flex items-center gap-2">
+             <Card className="h-full border-t-0 border-l border-r-0 border-b-0 border-zinc-700 bg-transparent px-4 py-2 relative overflow-hidden">
+                {/* Rank Watermark */}
+                <img 
+                  src="https://publish-01.obsidian.md/access/c6e84d0dba4a473d9f7c63884517ea6d/images/16.png" 
+                  alt="Rank Watermark" 
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-24 opacity-15 pointer-events-none"
+                />
+
+                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-4 flex items-center gap-2 relative z-10">
                   Promotion Log
                 </h3>
-                <div className="space-y-4 relative">
+                <div className="space-y-4 relative z-10">
                   <div className="absolute left-[3px] top-2 bottom-2 w-px bg-zinc-700"></div>
                   {[
-                    { rank: 'C/SSgt', date: 'Oct 01, 2023', active: true },
+                    { rank: 'C/Sgt', date: 'Dec 15, 2023', active: true },
+                    { rank: 'C/SSgt', date: 'Oct 01, 2023', active: false },
                     { rank: 'C/SrA', date: 'Feb 15, 2023', active: false },
-                    { rank: 'C/Amn', date: 'Sep 01, 2022', active: false },
                   ].map((log, i) => (
                     <div key={i} className="flex justify-between items-center text-sm relative pl-4">
                       <div className={`absolute left-0 w-2 h-2 rounded-full ${log.active ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'bg-zinc-600'}`}></div>
