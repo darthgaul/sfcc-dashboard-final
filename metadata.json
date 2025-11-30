@@ -1,0 +1,5 @@
+{
+  "name": "SFCC Command Suite",
+  "description": "A high-fidelity role-based dashboard for the Space Force Cadet Corps, featuring HQ, Regional, Squadron, Cadet, and Parent views.",
+  "requestFramePermissions": []
+}
