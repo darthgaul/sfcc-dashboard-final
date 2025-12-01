@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": ["https://darthgaul.github.io", "http://localhost:5173", "http://localhost:3000"]}})
 
 # Configuration
 app.config['SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'dev-secret-change-in-prod')
