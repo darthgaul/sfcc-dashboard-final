@@ -119,7 +119,7 @@ def auth_login():
     username = data.get('username', '').lower().strip()
     password = data.get('password', '')
     ip_address = request.remote_addr
-    
+
     # Check env-based admin first
     if username == ENV_ADMIN['username'] and ENV_ADMIN['password_hash']:
         try:
@@ -130,20 +130,22 @@ def auth_login():
                     'user_role': ENV_ADMIN['role'],
                     'exp': datetime.utcnow() + timedelta(hours=24)
                 }, app.config['SECRET_KEY'], algorithm='HS256')
-                
+
                 log_action(0, 'LOGIN_SUCCESS', 'auth', None, {'username': username, 'ip_address': ip_address})
-                
+
                 response = jsonify({
-    'token': token,
-    'user': {'username': username, 'role': ENV_ADMIN['role']}
-})
-response.headers.add('Access-Control-Allow-Origin', '*')
-return response
+                    'token': token,
+                    'user': {'username': username, 'role': ENV_ADMIN['role']}
+                })
+                response.headers.add('Access-Control-Allow-Origin', '*')
+                return response
         except Exception:
             pass
-    
+
     log_action(None, 'LOGIN_FAILED', 'auth', None, {'username': username, 'ip_address': ip_address})
-    return jsonify({'error': 'Invalid credentials'}), 401
+    response = jsonify({'error': 'Invalid credentials'})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response, 401
 
 @app.route('/api/login', methods=['POST'])
 def login():
