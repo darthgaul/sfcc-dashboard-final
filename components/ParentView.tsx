@@ -12,7 +12,7 @@ const ParentView: React.FC = () => {
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const payload = {
+    const payload = { 
       cadetName,
       allergies,
       medications,
