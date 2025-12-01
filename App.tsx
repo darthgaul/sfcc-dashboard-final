@@ -68,8 +68,8 @@ const App: React.FC = () => {
         }}
         className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all border-l-2 ${
           currentView === role
-            ? 'border-blue-500 text-white bg-white/5'
-            : 'border-transparent text-zinc-500 hover:text-zinc-300 hover:bg-white/5'
+            ? 'border-sfcc-accent text-sfcc-primary bg-sfcc-primary/5'
+            : 'border-transparent text-sfcc-secondary hover:text-sfcc-primary hover:bg-sfcc-primary/5'
         }`}
       >
         <Icon size={18} />
@@ -93,13 +93,13 @@ const App: React.FC = () => {
 
     if (user && !hasPermission(user, requiredPermission)) {
         return (
-            <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)] text-zinc-500 animate-in fade-in zoom-in-95">
+            <div className="flex flex-col items-center justify-center h-[calc(100vh-200px)] text-sfcc-secondary animate-in fade-in zoom-in-95">
                 <div className="p-6 bg-red-500/5 rounded-full mb-6 border border-red-500/20">
                     <Lock size={64} className="text-red-500" />
                 </div>
-                <h2 className="text-3xl font-bold uppercase tracking-widest text-white mb-2">Access Denied</h2>
+                <h2 className="text-3xl font-bold uppercase tracking-widest text-sfcc-primary mb-2">Access Denied</h2>
                 <p className="font-mono text-sm uppercase tracking-wider text-red-400">Insufficient Security Clearance</p>
-                <p className="text-xs text-zinc-600 mt-4 font-mono">Error Code: 403_FORBIDDEN | Role: {user.role}</p>
+                <p className="text-xs text-sfcc-secondary mt-4 font-mono">Error Code: 403_FORBIDDEN | Role: {user.role}</p>
             </div>
         );
     }
@@ -110,7 +110,7 @@ const App: React.FC = () => {
       case ViewRole.SQUADRON: return <SquadronView />;
       case ViewRole.CADET: return <CadetView />;
       case ViewRole.PARENT: return <ParentView />;
-      default: return <div className="p-10 text-center text-zinc-500">View Not Found</div>;
+      default: return <div className="p-10 text-center text-sfcc-secondary">View Not Found</div>;
     }
   };
 
@@ -119,7 +119,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen bg-sfcc-dark text-zinc-300 font-sans overflow-hidden">
+    <div className="flex h-screen bg-sfcc-dark text-sfcc-primary font-sans overflow-hidden">
       
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
@@ -142,8 +142,8 @@ const App: React.FC = () => {
               />
             </div>
             <div>
-              <h1 className="text-white font-bold tracking-wider leading-none">SFCC</h1>
-              <p className="text-[10px] text-zinc-500 tracking-[0.2em] mt-1">COMMAND SUITE</p>
+              <h1 className="text-sfcc-primary font-bold tracking-wider leading-none">SFCC</h1>
+              <p className="text-[10px] text-sfcc-secondary tracking-[0.2em] mt-1">COMMAND SUITE</p>
             </div>
           </div>
         </div>
@@ -151,7 +151,7 @@ const App: React.FC = () => {
         {/* Navigation */}
         <div className="flex-1 py-6 overflow-y-auto">
           <div className="px-4 mb-2">
-            <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-2">
+            <p className="text-[10px] font-bold text-sfcc-secondary uppercase tracking-widest mb-2">
               Menu
             </p>
           </div>
@@ -165,21 +165,21 @@ const App: React.FC = () => {
         </div>
 
         {/* User Footer */}
-        <div className="p-4 border-t border-sfcc-border bg-black/20">
+        <div className="p-4 border-t border-sfcc-border bg-sfcc-dark">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-600 flex items-center justify-center text-xs font-bold text-blue-500">
+            <div className="w-8 h-8 rounded-full bg-sfcc-panel border border-sfcc-border flex items-center justify-center text-xs font-bold text-sfcc-accent">
                 {user.name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-white truncate">{user.name}</p>
+              <p className="text-sm font-bold text-sfcc-primary truncate">{user.name}</p>
               <div className="flex items-center gap-2">
-                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-                 <p className="text-[10px] text-zinc-500 tracking-wider truncate">LEVEL {user.accessLevel}</p>
+                 <span className="w-1.5 h-1.5 rounded-full bg-sfcc-accent animate-pulse"></span>
+                 <p className="text-[10px] text-sfcc-secondary tracking-wider truncate">LEVEL {user.accessLevel}</p>
               </div>
             </div>
             <button 
               onClick={handleLogout}
-              className="text-zinc-500 hover:text-red-400 transition-colors p-1" 
+              className="text-sfcc-secondary hover:text-red-400 transition-colors p-1" 
               title="Disconnect"
             >
               <LogOut size={16} />
@@ -189,11 +189,11 @@ const App: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col h-full min-w-0 bg-[#121212] relative">
+      <main className="flex-1 flex flex-col h-full min-w-0 bg-sfcc-dark relative">
         {/* Background Grid Pattern (Subtle) */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.03]" 
              style={{ 
-               backgroundImage: 'linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)',
+               backgroundImage: 'linear-gradient(#252525 1px, transparent 1px), linear-gradient(90deg, #252525 1px, transparent 1px)',
                backgroundSize: '40px 40px'
              }}>
         </div>
@@ -206,16 +206,16 @@ const App: React.FC = () => {
                 alt="Logo"
                 className="w-6 h-6 object-contain"
               />
-              <span className="font-bold text-zinc-200">SFCC</span>
+              <span className="font-bold text-sfcc-primary">SFCC</span>
            </div>
-           <button onClick={() => setMobileMenuOpen(true)} className="text-zinc-300">
+           <button onClick={() => setMobileMenuOpen(true)} className="text-sfcc-primary">
              <Menu />
            </button>
         </div>
 
         {/* Top Status Bar (Desktop) */}
         <div className="hidden lg:flex items-center justify-between px-8 py-2 border-b border-sfcc-border bg-sfcc-panel/50 backdrop-blur-sm z-30 h-10">
-           <div className="flex gap-4 text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+           <div className="flex gap-4 text-[10px] font-mono text-sfcc-secondary uppercase tracking-widest">
               <span className="flex items-center gap-1.5">
                 SYSTEM: <span className="text-emerald-500 font-bold">ONLINE</span>
               </span>
@@ -224,10 +224,10 @@ const App: React.FC = () => {
                 <Lock size={10} className="text-emerald-500" />
               </span>
               <span className="flex items-center gap-1.5">
-                SESSION: <span className="text-zinc-300">15 MIN</span>
+                SESSION: <span className="text-sfcc-primary">15 MIN</span>
               </span>
            </div>
-           <div className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest border px-2 py-0.5 border-zinc-700 rounded-sm">
+           <div className="text-[10px] font-mono text-sfcc-secondary uppercase tracking-widest border px-2 py-0.5 border-sfcc-border rounded-sm">
               Term: Fall 2023
            </div>
         </div>
