@@ -131,7 +131,7 @@ def auth_login():
                     'exp': datetime.utcnow() + timedelta(hours=24)
                 }, app.config['SECRET_KEY'], algorithm='HS256')
                 
-                log_action(0, 'LOGIN_SUCCESS', details={'username': username, 'ip_address': ip_address})
+                log_action(0, 'LOGIN_SUCCESS', 'auth', None, {'username': username, 'ip_address': ip_address})
                 
                 return jsonify({
                     'token': token,
@@ -140,7 +140,7 @@ def auth_login():
         except Exception:
             pass
     
-    log_action(None, 'LOGIN_FAILED', details={'username': username, 'ip_address': ip_address})
+    log_action(None, 'LOGIN_FAILED', 'auth', None, {'username': username, 'ip_address': ip_address})
     return jsonify({'error': 'Invalid credentials'}), 401
 
 @app.route('/api/login', methods=['POST'])
