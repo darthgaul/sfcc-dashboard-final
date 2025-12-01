@@ -92,13 +92,13 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
       
       try {
         // Authenticate with Real Backend
-        const response = await fetch('https://sfcc-dashboard-final.onrender.com/api/login', {
+        const response = await fetch('https://sfcc-dashboard-final.onrender.com/api/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           // Mapping username input to email field as expected by backend
-          body: JSON.stringify({ email: username, password: password }),
+          body: JSON.stringify({ username: username, password: password }),
         });
 
         const data = await response.json();
