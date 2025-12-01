@@ -92,6 +92,7 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
       
       try {
         // Authenticate with Real Backend
+        // Ensuring the endpoint is exactly /api/login
         const response = await fetch('https://sfcc-dashboard-final.onrender.com/api/login', {
           method: 'POST',
           headers: {
