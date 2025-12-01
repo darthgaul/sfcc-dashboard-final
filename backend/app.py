@@ -143,4 +143,3 @@ def auth_login():
     response = jsonify({'error': 'Invalid credentials'})
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response, 401
-```
