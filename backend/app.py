@@ -133,10 +133,12 @@ def auth_login():
                 
                 log_action(0, 'LOGIN_SUCCESS', 'auth', None, {'username': username, 'ip_address': ip_address})
                 
-                return jsonify({
-                    'token': token,
-                    'user': {'username': username, 'role': ENV_ADMIN['role']}
-                })
+                response = jsonify({
+    'token': token,
+    'user': {'username': username, 'role': ENV_ADMIN['role']}
+})
+response.headers.add('Access-Control-Allow-Origin', '*')
+return response
         except Exception:
             pass
     
@@ -154,7 +156,9 @@ def login():
     password = data.get('password')
     
     if not email or not password:
-        return jsonify({'error': 'Email and password required'}), 400
+        response = jsonify({'error': 'Invalid credentials'})
+response.headers.add('Access-Control-Allow-Origin', '*')
+return response, 401
     
     db = get_db()
     cur = db.cursor()
