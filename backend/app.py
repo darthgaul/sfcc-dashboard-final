@@ -22,8 +22,15 @@ app = Flask(__name__)
 CORS(app)
 
 # Configuration
-app.config['SECRET_KEY'] = os.getenv('JWT_SECRET', 'dev-secret-change-in-prod')
+app.config['SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'dev-secret-change-in-prod')
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://localhost/sfcc_command_suite')
+
+# Env-based admin (for initial setup before database users exist)
+ENV_ADMIN = {
+    'username': 'admin',
+    'password_hash': os.getenv('ADMIN_PASSWORD_HASH'),
+    'role': 'admin'
+}
 
 # ============================================
 # DATABASE CONNECTION
@@ -103,6 +110,39 @@ def require_role(allowed_roles):
 # ============================================
 # AUTH ENDPOINTS
 # ============================================
+@app.route('/api/auth/login', methods=['POST'])
+def auth_login():
+    """
+    Authenticate via username (env-based admin) or email (database users).
+    """
+    data = request.get_json()
+    username = data.get('username', '').lower().strip()
+    password = data.get('password', '')
+    ip_address = request.remote_addr
+    
+    # Check env-based admin first
+    if username == ENV_ADMIN['username'] and ENV_ADMIN['password_hash']:
+        try:
+            if bcrypt.checkpw(password.encode('utf-8'), ENV_ADMIN['password_hash'].encode('utf-8')):
+                token = jwt.encode({
+                    'user_id': 0,
+                    'username': username,
+                    'user_role': ENV_ADMIN['role'],
+                    'exp': datetime.utcnow() + timedelta(hours=24)
+                }, app.config['SECRET_KEY'], algorithm='HS256')
+                
+                log_action(0, 'LOGIN_SUCCESS', details={'username': username, 'ip_address': ip_address})
+                
+                return jsonify({
+                    'token': token,
+                    'user': {'username': username, 'role': ENV_ADMIN['role']}
+                })
+        except Exception:
+            pass
+    
+    log_action(None, 'LOGIN_FAILED', details={'username': username, 'ip_address': ip_address})
+    return jsonify({'error': 'Invalid credentials'}), 401
+
 @app.route('/api/login', methods=['POST'])
 def login():
     """
