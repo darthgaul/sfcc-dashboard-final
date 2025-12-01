@@ -80,28 +80,57 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
     return () => clearInterval(timer);
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setStatusText('INITIATING HANDSHAKE...');
 
-    // Simulate network delay and security checks
-    setTimeout(() => {
+    // Simulate network delay for effect
+    setTimeout(async () => {
       setStatusText('VERIFYING CREDENTIALS...');
-      setTimeout(() => {
-        if (MOCK_USERS[username] && (password === 'password' || password === 'secure')) {
+      
+      try {
+        // Authenticate with Real Backend
+        const response = await fetch('https://sfcc-dashboard-final.onrender.com/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          // Mapping username input to email field as expected by backend
+          body: JSON.stringify({ email: username, password: password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Store the JWT token as requested
+          localStorage.setItem('token', data.token);
+
           setStatusText('ACCESS GRANTED. ESTABLISHING SESSION...');
-          const hydratedUser = hydrateUserPermissions(MOCK_USERS[username]);
+          
           setTimeout(() => {
-             onLogin(hydratedUser);
+            // Use MOCK_USERS for rich UI data if available, otherwise fallback to basic user data
+            const uiUser = MOCK_USERS[username] || {
+              id: String(data.user_id),
+              username: username,
+              name: username, // Fallback name
+              role: data.role, // Use role from backend
+              accessLevel: 'L1',
+            };
+            
+            const hydratedUser = hydrateUserPermissions(uiUser);
+            onLogin(hydratedUser);
           }, 800);
         } else {
-          setLoading(false);
-          setError('INVALID CREDENTIALS');
-          setStatusText('ACCESS DENIED. EVENT LOGGED.');
+          throw new Error(data.message || 'Invalid credentials');
         }
-      }, 1000);
+      } catch (err) {
+        setLoading(false);
+        setError('INVALID CREDENTIALS');
+        setStatusText('ACCESS DENIED. EVENT LOGGED.');
+        console.error('Login error:', err);
+      }
     }, 800);
   };
 
