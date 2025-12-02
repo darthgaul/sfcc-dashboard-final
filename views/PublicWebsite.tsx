@@ -22,7 +22,11 @@ import {
   ExternalLink, 
   X, 
   CreditCard, 
-  UserPlus
+  UserPlus,
+  Brain,
+  Wifi,
+  Activity,
+  Lock
 } from 'lucide-react';
 import ConstellationBackground from '../components/ConstellationBackground';
 import SquadronGlobe, { SquadronLocation } from '../components/SquadronGlobe';
@@ -226,35 +230,51 @@ const PublicWebsite: React.FC<PublicWebsiteProps> = ({ onEnterCommand }) => {
           </div>
         </div>
 
-        {/* --- Mission Pillars --- */}
+        {/* --- Core Pillars (Programs) --- */}
         <section id="programs" className="py-24 bg-[#191818]/80 relative z-10">
           <div className="max-w-7xl mx-auto px-6">
               <div className="text-center mb-16">
-                <h2 className="text-3xl font-bold text-white uppercase tracking-wider mb-4">Core Directives</h2>
+                <h2 className="text-3xl font-bold text-white uppercase tracking-wider mb-4">Core Pillars</h2>
                 <div className="h-1 w-20 bg-[#3684ca] mx-auto"></div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {[
-                  { icon: Rocket, title: "Aerospace STEM", desc: "Hands-on rocketry, satellite orbital mechanics, and propulsion labs designed to challenge." },
-                  { icon: Shield, title: "Character Leadership", desc: "Developing ethical leaders through rigorous training, discipline, and community service." },
-                  { icon: Globe, title: "Global Citizenship", desc: "Understanding the role of space in connecting and protecting the modern world." }
-                ].map((card, i) => (
-                  <div key={i} className="group p-8 bg-[#252525] border border-[#5f686e]/30 rounded-sm hover:border-[#3684ca] transition-all duration-300 hover:-translate-y-2 shadow-lg">
-                      <div className="w-14 h-14 bg-[#3684ca]/10 rounded-full flex items-center justify-center text-[#3684ca] mb-6 group-hover:bg-[#3684ca] group-hover:text-white transition-colors">
-                        <card.icon size={28} />
-                      </div>
-                      <h3 className="text-xl font-bold text-white mb-3">{card.title}</h3>
-                      <p className="text-[#96a3ae] leading-relaxed text-sm">{card.desc}</p>
+              {/* Leadership Development Container */}
+              <div className="bg-[#252525]/50 border border-[#5f686e]/30 rounded-lg p-8 md:p-12 relative overflow-hidden">
+                  {/* Decorative Header Background */}
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#3684ca] to-transparent opacity-50"></div>
+                  <div className="absolute top-0 right-0 p-4 opacity-5">
+                     <Users size={120} />
                   </div>
-                ))}
+
+                  <div className="text-center mb-12 max-w-3xl mx-auto relative z-10">
+                     <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 tracking-tight">Leadership Development</h3>
+                     <p className="text-[#96a3ae] text-lg leading-relaxed">
+                        We don't just teach technology; we forge leaders who can command it. 
+                        Through teamwork, ethics, and hands-on operational experience, cadets master the domains of the future.
+                     </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                    {[
+                      { icon: Rocket, title: "Space Engineering", desc: "Hands-on rocketry, satellite orbital mechanics, and propulsion labs." },
+                      { icon: Shield, title: "Cybersecurity Ops", desc: "Network defense, systems hardening, and ethical hacking scenarios." },
+                      { icon: Cpu, title: "Artificial Intelligence", desc: "Machine learning fundamentals, autonomous systems logic, and data ethics." }
+                    ].map((card, i) => (
+                      <div key={i} className="group p-8 bg-[#191818] border border-[#5f686e]/30 rounded-sm hover:border-[#3684ca] transition-all duration-300 hover:-translate-y-1 shadow-lg flex flex-col items-center text-center">
+                          <div className="w-16 h-16 bg-[#3684ca]/10 rounded-full flex items-center justify-center text-[#3684ca] mb-6 group-hover:bg-[#3684ca] group-hover:text-white transition-colors duration-300">
+                            <card.icon size={32} />
+                          </div>
+                          <h3 className="text-xl font-bold text-white mb-3">{card.title}</h3>
+                          <p className="text-[#96a3ae] leading-relaxed text-sm">{card.desc}</p>
+                      </div>
+                    ))}
+                  </div>
               </div>
           </div>
         </section>
 
-        {/* --- 3D Globe Locator (Replaced Radar) --- */}
+        {/* --- 3D Globe Locator --- */}
         <section id="locate" className="py-20 bg-[#0f0f11] relative z-10">
-           
            <div className="max-w-7xl mx-auto px-6">
               <div className="flex flex-col lg:flex-row justify-between items-end mb-8 gap-6">
                   <div>
@@ -278,9 +298,8 @@ const PublicWebsite: React.FC<PublicWebsiteProps> = ({ onEnterCommand }) => {
                   </div>
               </div>
 
-              {/* TACTICAL VIEWPORT FRAME - Force dimensions */}
+              {/* TACTICAL VIEWPORT FRAME */}
               <div className="relative w-full h-[600px] border border-[#3684ca]/20 bg-[#0f0f11] rounded-sm overflow-hidden shadow-2xl">
-                  
                   {/* Grid Lines Overlay */}
                   <div className="absolute inset-0 pointer-events-none z-10" 
                        style={{ backgroundImage: 'linear-gradient(#3684ca22 1px, transparent 1px), linear-gradient(90deg, #3684ca22 1px, transparent 1px)', backgroundSize: '40px 40px', opacity: 0.1 }}>
@@ -360,49 +379,126 @@ const PublicWebsite: React.FC<PublicWebsiteProps> = ({ onEnterCommand }) => {
            </div>
         </section>
 
-        {/* --- Tech Section --- */}
-        <section className="py-24 bg-[#191818]/90 relative z-10" id="tech">
-          <div className="absolute -right-20 top-1/2 -translate-y-1/2 w-96 h-96 border-[40px] border-[#3684ca]/5 rounded-full pointer-events-none"></div>
-          <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <div>
-                <div className="inline-block text-[#3684ca] font-mono text-xs uppercase tracking-widest mb-4">Advanced Training Infrastructure</div>
-                <h2 className="text-4xl font-bold text-white mb-6">Equipping The Next Generation</h2>
-                <p className="text-[#96a3ae] mb-8 leading-relaxed">
-                    The SFCC utilizes cutting-edge simulation technology and real-world operational frameworks. 
-                    Our cadets train using the same systems and methodologies as active duty guardians.
-                </p>
-                <div className="space-y-4">
-                    {["Cyber Security Ranges", "Drone Flight Operations", "Emergency Response Certifications", "Satellite Communications"].map((item, i) => (
-                      <div key={i} className="flex items-center gap-4">
-                        <div className="w-6 h-6 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                            <Target size={14} />
-                        </div>
-                        <span className="text-white font-medium">{item}</span>
-                      </div>
-                    ))}
-                </div>
-              </div>
+        {/* --- Equipping The Next Generation (Replaced Tech Section) --- */}
+        <section id="tech" className="py-40 pb-60 bg-[#0f0f11] relative z-10 overflow-hidden min-h-[90vh] flex items-center">
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#1a1a2e] to-[#0f0f11] opacity-50 pointer-events-none"></div>
+          
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               
-              <div className="relative">
-                <div className="bg-[#191818] border border-[#5f686e]/50 rounded p-6 shadow-2xl relative z-10">
-                    <div className="flex items-center gap-2 mb-4 border-b border-[#5f686e]/30 pb-4">
-                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                      <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                      <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                      <div className="ml-auto text-[10px] font-mono text-[#96a3ae]">SYS.MONITOR.v2</div>
+              {/* Text Content */}
+              <div className="order-2 lg:order-1">
+                 <div className="inline-block text-[#3684ca] font-mono text-xs uppercase tracking-widest mb-4">Training Infrastructure</div>
+                 <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                    Equipping The <br/>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-[#3684ca]">Next Generation</span>
+                 </h2>
+                 <p className="text-[#96a3ae] mb-8 text-lg leading-relaxed">
+                    The SFCC utilizes cutting-edge simulation technology and real-world operational frameworks. 
+                    Our cadets train using the same systems and methodologies as active duty guardians, preparing them for the complexities of modern aerospace operations.
+                 </p>
+                 
+                 <div className="mt-8 font-mono text-sm space-y-4 border-l-2 border-[#3684ca]/30 pl-6">
+                    <div className="flex items-center gap-3">
+                        <CheckCircle2 size={16} className="text-emerald-500" />
+                        <span className="text-white">Industry-Standard Cyber Ranges</span>
                     </div>
-                    <div className="space-y-3">
-                      <div className="h-2 bg-[#252525] rounded w-3/4"></div>
-                      <div className="h-2 bg-[#252525] rounded w-1/2"></div>
-                      <div className="grid grid-cols-3 gap-2 mt-4">
-                          <div className="h-20 bg-[#3684ca]/10 border border-[#3684ca]/30 rounded flex items-center justify-center"><Cpu className="text-[#3684ca]" /></div>
-                          <div className="h-20 bg-[#252525] border border-[#5f686e]/30 rounded"></div>
-                          <div className="h-20 bg-[#252525] border border-[#5f686e]/30 rounded"></div>
-                      </div>
+                    <div className="flex items-center gap-3">
+                        <CheckCircle2 size={16} className="text-emerald-500" />
+                        <span className="text-white">FAA-Certified Drone Flight Operations</span>
                     </div>
-                </div>
-                <div className="absolute -top-4 -right-4 w-full h-full border border-[#3684ca]/30 rounded -z-10"></div>
+                    <div className="flex items-center gap-3">
+                        <CheckCircle2 size={16} className="text-emerald-500" />
+                        <span className="text-white">Emergency Response Certifications (FEMA)</span>
+                    </div>
+                 </div>
               </div>
+
+              {/* Interactive HUD Visual */}
+              <div className="order-1 lg:order-2 relative perspective-[2000px]">
+                 {/* Main Holographic Container */}
+                 <div className="bg-[#191818]/80 backdrop-blur-md border border-[#3684ca]/30 p-1 rounded-lg shadow-[0_0_50px_rgba(54,132,202,0.15)] relative group transform transition-transform duration-500 hover:rotate-y-2 hover:rotate-x-2">
+                    {/* Scanning Line */}
+                    <div className="absolute top-0 left-0 w-full h-1 bg-[#3684ca]/50 shadow-[0_0_15px_#3684ca] animate-scan opacity-0 group-hover:opacity-100 transition-opacity z-20"></div>
+                    
+                    {/* Header of HUD */}
+                    <div className="bg-[#252525] p-4 flex justify-between items-center border-b border-[#3684ca]/20 rounded-t-lg">
+                        <div className="flex gap-2">
+                            <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
+                            <div className="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                        </div>
+                        <div className="text-[10px] text-[#3684ca] font-mono tracking-widest">SYS.DIAGNOSTIC.ACTIVE</div>
+                    </div>
+
+                    {/* Grid of Modules */}
+                    <div className="p-6 grid grid-cols-2 gap-4">
+                        {/* Module 1: Cyber */}
+                        <div className="bg-[#0f0f11] border border-[#5f686e]/30 p-4 rounded hover:border-[#3684ca] transition-all group/item relative overflow-hidden">
+                            <div className="absolute inset-0 bg-[#3684ca]/5 opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            <div className="flex justify-between items-start mb-3">
+                                <Shield className="text-[#3684ca]" size={24} />
+                                <span className="text-[9px] font-mono text-emerald-500 border border-emerald-500/30 px-1 rounded bg-emerald-500/10">SECURE</span>
+                            </div>
+                            <div className="text-xs font-bold text-white uppercase tracking-wider mb-1">Cyber Defense</div>
+                            <div className="h-1 w-full bg-[#252525] rounded-full overflow-hidden">
+                                <div className="h-full bg-[#3684ca] w-[85%] group-hover/item:animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        {/* Module 2: Satellite */}
+                        <div className="bg-[#0f0f11] border border-[#5f686e]/30 p-4 rounded hover:border-[#3684ca] transition-all group/item relative overflow-hidden">
+                            <div className="absolute inset-0 bg-[#3684ca]/5 opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            <div className="flex justify-between items-start mb-3">
+                                <Radio className="text-[#3684ca]" size={24} />
+                                <span className="text-[9px] font-mono text-emerald-500 border border-emerald-500/30 px-1 rounded bg-emerald-500/10">LINKED</span>
+                            </div>
+                            <div className="text-xs font-bold text-white uppercase tracking-wider mb-1">Orbital Comms</div>
+                            <div className="h-1 w-full bg-[#252525] rounded-full overflow-hidden">
+                                <div className="h-full bg-[#3684ca] w-[92%] group-hover/item:animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        {/* Module 3: AI */}
+                        <div className="bg-[#0f0f11] border border-[#5f686e]/30 p-4 rounded hover:border-[#3684ca] transition-all group/item relative overflow-hidden">
+                            <div className="absolute inset-0 bg-[#3684ca]/5 opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            <div className="flex justify-between items-start mb-3">
+                                <Brain className="text-[#3684ca]" size={24} />
+                                <span className="text-[9px] font-mono text-amber-500 border border-amber-500/30 px-1 rounded bg-amber-500/10">LEARNING</span>
+                            </div>
+                            <div className="text-xs font-bold text-white uppercase tracking-wider mb-1">AI Logic Core</div>
+                            <div className="h-1 w-full bg-[#252525] rounded-full overflow-hidden">
+                                <div className="h-full bg-[#3684ca] w-[60%] group-hover/item:animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        {/* Module 4: Flight */}
+                        <div className="bg-[#0f0f11] border border-[#5f686e]/30 p-4 rounded hover:border-[#3684ca] transition-all group/item relative overflow-hidden">
+                            <div className="absolute inset-0 bg-[#3684ca]/5 opacity-0 group-hover/item:opacity-100 transition-opacity"></div>
+                            <div className="flex justify-between items-start mb-3">
+                                <Navigation className="text-[#3684ca]" size={24} />
+                                <span className="text-[9px] font-mono text-emerald-500 border border-emerald-500/30 px-1 rounded bg-emerald-500/10">FLIGHT_RDY</span>
+                            </div>
+                            <div className="text-xs font-bold text-white uppercase tracking-wider mb-1">Drone Ops</div>
+                            <div className="h-1 w-full bg-[#252525] rounded-full overflow-hidden">
+                                <div className="h-full bg-[#3684ca] w-[100%] group-hover/item:animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Footer Stats */}
+                    <div className="bg-[#191818]/50 p-4 border-t border-[#3684ca]/20 flex justify-between items-center text-[9px] font-mono text-[#5f686e] uppercase">
+                        <span>Mem: 64TB / 128TB</span>
+                        <span>Uptime: 99.99%</span>
+                    </div>
+                 </div>
+                 
+                 {/* Decorative background element for depth */}
+                 <div className="absolute -top-6 -right-6 w-full h-full border border-[#3684ca]/10 rounded-lg -z-10"></div>
+                 <div className="absolute -bottom-6 -left-6 w-full h-full border border-[#3684ca]/10 rounded-lg -z-10"></div>
+              </div>
+
+            </div>
           </div>
         </section>
 
@@ -476,6 +572,24 @@ const Badge = ({ status, children }: { status: 'success' | 'warning' | 'danger';
       </span>
    );
 };
+
+const CheckCircle2 = ({ size, className }: { size?: number, className?: string }) => (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width={size || 24} 
+      height={size || 24} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+      <path d="m9 12 2 2 4-4"/>
+    </svg>
+);
 
 const FlagIcon = ({ className }: { className?: string }) => (
   <svg 
