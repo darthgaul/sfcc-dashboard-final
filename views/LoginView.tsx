@@ -148,6 +148,11 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
             };
             
             const hydratedUser = hydrateUserPermissions(uiUser);
+            
+            // Fix: Save user to storage so App.tsx can persist session
+            // We save the hydratedUser because it contains the properly mapped UserRole and permissions
+            localStorage.setItem('user', JSON.stringify(hydratedUser));
+            
             onLogin(hydratedUser);
           }, 800);
         } else {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Map, 
@@ -17,33 +17,53 @@ import CadetView from './views/CadetView';
 import ParentView from './components/ParentView';
 import LoginView from './views/LoginView';
 
-const App: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [currentView, setCurrentView] = useState<ViewRole>(ViewRole.HQ);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+// Map the 10 System Roles to the 5 Available UI Dashboards
+const getDashboardViewForRole = (role: UserRole): ViewRole => {
+  switch(role) {
+      case UserRole.BOARD_OF_DIRECTORS:
+      case UserRole.EXTERNAL_AUDITOR:
+      case UserRole.EXECUTIVE_STAFF:
+      case UserRole.CFO_TREASURER:
+      case UserRole.SUPPORT_STAFF:
+          return ViewRole.HQ;
+      case UserRole.REGIONAL_COMMANDER:
+          return ViewRole.REGIONAL;
+      case UserRole.SQUADRON_COMMANDER:
+      case UserRole.REVIEWER_INSTRUCTOR:
+          return ViewRole.SQUADRON;
+      case UserRole.CADET_MEMBER:
+          return ViewRole.CADET;
+      case UserRole.PARENT_GUARDIAN:
+          return ViewRole.PARENT;
+      default:
+          return ViewRole.HQ;
+  }
+};
 
-  // Map the 10 System Roles to the 5 Available UI Dashboards
-  const getDashboardViewForRole = (role: UserRole): ViewRole => {
-    switch(role) {
-        case UserRole.BOARD_OF_DIRECTORS:
-        case UserRole.EXTERNAL_AUDITOR:
-        case UserRole.EXECUTIVE_STAFF:
-        case UserRole.CFO_TREASURER:
-        case UserRole.SUPPORT_STAFF:
-            return ViewRole.HQ;
-        case UserRole.REGIONAL_COMMANDER:
-            return ViewRole.REGIONAL;
-        case UserRole.SQUADRON_COMMANDER:
-        case UserRole.REVIEWER_INSTRUCTOR:
-            return ViewRole.SQUADRON;
-        case UserRole.CADET_MEMBER:
-            return ViewRole.CADET;
-        case UserRole.PARENT_GUARDIAN:
-            return ViewRole.PARENT;
-        default:
-            return ViewRole.HQ;
+const App: React.FC = () => {
+  // Initialize user from localStorage to persist session
+  const [user, setUser] = useState<User | null>(() => {
+    try {
+      const savedUser = localStorage.getItem('user');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (e) {
+      console.error("Failed to parse user from storage", e);
+      return null;
     }
-  };
+  });
+
+  const [currentView, setCurrentView] = useState<ViewRole>(() => {
+    try {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        const parsed = JSON.parse(savedUser);
+        return getDashboardViewForRole(parsed.role);
+      }
+    } catch (e) {}
+    return ViewRole.HQ;
+  });
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogin = (authenticatedUser: User) => {
     setUser(authenticatedUser);
@@ -52,6 +72,8 @@ const App: React.FC = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
     setCurrentView(ViewRole.HQ);
   };
