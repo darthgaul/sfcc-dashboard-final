@@ -16,6 +16,7 @@ import SquadronView from './views/SquadronView';
 import CadetView from './views/CadetView';
 import ParentView from './components/ParentView';
 import LoginView from './views/LoginView';
+import PublicWebsite from './views/PublicWebsite';
 
 // Map the 10 System Roles to the 5 Available UI Dashboards
 const getDashboardViewForRole = (role: UserRole): ViewRole => {
@@ -41,6 +42,10 @@ const getDashboardViewForRole = (role: UserRole): ViewRole => {
 };
 
 const App: React.FC = () => {
+  // New State: Control 'Public' vs 'Command' mode
+  // If user is logged in, default to Command, otherwise Public
+  const [appMode, setAppMode] = useState<'PUBLIC' | 'COMMAND'>('PUBLIC');
+
   // Initialize user from localStorage to persist session
   const [user, setUser] = useState<User | null>(() => {
     try {
@@ -75,6 +80,13 @@ const App: React.FC = () => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // If we have a user on load, we are in Command Mode
+  useEffect(() => {
+    if (user) {
+      setAppMode('COMMAND');
+    }
+  }, []);
+
   const handleLogin = (authenticatedUser: User) => {
     setUser(authenticatedUser);
     // Set initial view based on mapped role
@@ -86,6 +98,16 @@ const App: React.FC = () => {
     localStorage.removeItem('user');
     setUser(null);
     setCurrentView(ViewRole.HQ);
+    // Optionally return to public site on logout, or stay in login screen
+    // setAppMode('PUBLIC'); 
+  };
+
+  const handleEnterCommand = () => {
+    setAppMode('COMMAND');
+  };
+
+  const handleExitCommand = () => {
+    setAppMode('PUBLIC');
   };
 
   const NavItem = ({ permission, role, icon: Icon, label }: { permission: Permission; role: ViewRole; icon: any; label: string }) => {
@@ -146,10 +168,20 @@ const App: React.FC = () => {
     }
   };
 
-  if (!user) {
-    return <LoginView onLogin={handleLogin} />;
+  // --- RENDER LOGIC ---
+
+  // Mode 1: Public Website
+  if (appMode === 'PUBLIC') {
+    return <PublicWebsite onEnterCommand={handleEnterCommand} />;
   }
 
+  // Mode 2: Login Screen (Command Mode but no User)
+  if (!user) {
+    // Pass handleExitCommand to LoginView to allow user to go back to website
+    return <LoginView onLogin={handleLogin} onBack={handleExitCommand} />;
+  }
+
+  // Mode 3: The Command Suite Dashboard (Command Mode + User)
   return (
     <div className="flex h-screen bg-sfcc-dark text-sfcc-primary font-sans overflow-hidden">
       

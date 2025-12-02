@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, ChevronRight, AlertCircle, Eye, EyeOff, Terminal } from 'lucide-react';
+import { Lock, ChevronRight, AlertCircle, Eye, EyeOff, Terminal, ArrowLeft } from 'lucide-react';
 import { User, UserRole } from '../types';
 import { hydrateUserPermissions } from '../security/AccessControl';
 
 interface LoginViewProps {
   onLogin: (user: User) => void;
+  onBack?: () => void; // Optional callback to return to website
 }
 
 // Task 1: Define the 10 System Roles (Mock Users)
@@ -56,7 +57,7 @@ const MOCK_USERS: Record<string, User> = {
   }
 };
 
-const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
+const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -134,6 +135,16 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
        <div className="absolute bottom-10 right-10 text-[10px] font-mono text-sfcc-border hidden md:block">
           SECURE CONNECTION: TLS 1.3 | AES-256-GCM
        </div>
+
+       {/* Back Button */}
+       {onBack && (
+         <button 
+           onClick={onBack}
+           className="absolute top-6 left-6 flex items-center gap-2 text-[#96a3ae] hover:text-white transition-colors text-xs font-bold uppercase tracking-widest z-50"
+         >
+           <ArrowLeft size={16} /> Return to Website
+         </button>
+       )}
 
        <div className="w-full max-w-md p-8 relative z-10">
           {/* Header */}
