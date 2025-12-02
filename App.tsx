@@ -9,7 +9,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { ViewRole, User, UserRole, Permission } from './types';
-import { hasPermission } from './security/AccessControl';
+import { hasPermission, hydrateUserPermissions } from './security/AccessControl';
 import HQView from './views/HQView';
 import RegionalView from './views/RegionalView';
 import SquadronView from './views/SquadronView';
@@ -45,7 +45,15 @@ const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(() => {
     try {
       const savedUser = localStorage.getItem('user');
-      return savedUser ? JSON.parse(savedUser) : null;
+      if (savedUser) {
+        const parsed = JSON.parse(savedUser);
+        // Re-hydrate permissions since they may be lost in serialization
+        if (parsed && parsed.role) {
+          return hydrateUserPermissions(parsed);
+        }
+        return parsed;
+      }
+      return null;
     } catch (e) {
       console.error("Failed to parse user from storage", e);
       return null;
@@ -57,7 +65,9 @@ const App: React.FC = () => {
       const savedUser = localStorage.getItem('user');
       if (savedUser) {
         const parsed = JSON.parse(savedUser);
-        return getDashboardViewForRole(parsed.role);
+        // Ensure we map the role correctly on init
+        const role = parsed.role as UserRole;
+        return getDashboardViewForRole(role);
       }
     } catch (e) {}
     return ViewRole.HQ;
