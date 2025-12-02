@@ -9,19 +9,19 @@ import {
   Cpu, 
   Users, 
   Target, 
-  Terminal,
-  MapPin,
-  Search,
-  Radar,
-  Crosshair,
-  Radio,
-  Zap,
-  Map,
-  Clock,
-  Navigation,
-  ExternalLink,
-  X,
-  CreditCard,
+  Terminal, 
+  MapPin, 
+  Search, 
+  Radar, 
+  Crosshair, 
+  Radio, 
+  Zap, 
+  Map, 
+  Clock, 
+  Navigation, 
+  ExternalLink, 
+  X, 
+  CreditCard, 
   UserPlus
 } from 'lucide-react';
 import ConstellationBackground from '../components/ConstellationBackground';
@@ -114,6 +114,18 @@ const MOCK_SQUADRONS: SquadronDetails[] = [
 const PublicWebsite: React.FC<PublicWebsiteProps> = ({ onEnterCommand }) => {
   const [selectedSquadronId, setSelectedSquadronId] = useState<string | null>(null);
   const [selectedSquadron, setSelectedSquadron] = useState<SquadronDetails | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter Logic
+  const filteredSquadrons = MOCK_SQUADRONS.filter(s => {
+    const query = searchQuery.toLowerCase();
+    return (
+      s.name.toLowerCase().includes(query) ||
+      s.cityState.toLowerCase().includes(query) ||
+      s.id.toLowerCase().includes(query) ||
+      s.sector.toLowerCase().includes(query)
+    );
+  });
 
   useEffect(() => {
     if (selectedSquadronId) {
@@ -258,7 +270,9 @@ const PublicWebsite: React.FC<PublicWebsiteProps> = ({ onEnterCommand }) => {
                       <Search className="absolute left-3 top-2.5 text-[#3684ca]" size={16} />
                       <input 
                         type="text" 
-                        placeholder="SEARCH SECTOR OR ZIP CODE..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="SEARCH SECTOR, CITY, OR STATE..." 
                         className="w-full bg-[#191818] border border-[#3684ca]/30 text-white text-xs py-2.5 pl-10 pr-4 rounded-sm focus:outline-none focus:border-[#3684ca] font-mono uppercase"
                       />
                   </div>
@@ -274,8 +288,9 @@ const PublicWebsite: React.FC<PublicWebsiteProps> = ({ onEnterCommand }) => {
                   
                   {/* The 3D Component */}
                   <SquadronGlobe 
-                      locations={MOCK_SQUADRONS} 
-                      onSelect={(id) => setSelectedSquadronId(id)} 
+                      locations={filteredSquadrons} 
+                      onSelect={(id) => setSelectedSquadronId(id)}
+                      selectedId={selectedSquadronId}
                   />
 
                   {/* Corner Accents */}
