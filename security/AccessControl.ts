@@ -67,6 +67,12 @@ export function hasPermission(
   permission: Permission, 
   resourceScope?: { regionId?: string; squadronId?: string; cadetId?: string }
 ): boolean {
+  // ADMIN OVERRIDE: Admin user has all permissions
+  // This handles the default admin user created by the backend which might have raw string role 'admin'
+  if (user?.username === 'admin' || (user?.role as any) === 'admin') {
+    return true;
+  }
+
   if (!user || !user.role) return false;
 
   // 1. Check Role-based Permissions
