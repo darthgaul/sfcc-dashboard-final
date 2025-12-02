@@ -110,14 +110,41 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
 
           setStatusText('ACCESS GRANTED. ESTABLISHING SESSION...');
           
+          // Parse user details from response
+          const backendUser = data.user || {};
+          // Support both `role` and `user_role` properties, default to cadet if missing
+          const rawRole = backendUser.user_role || backendUser.role || 'cadet_member';
+          
+          // Helper to map backend string roles to Frontend Enums
+          const mapRole = (r: string): UserRole => {
+             const normalized = r.toLowerCase();
+             
+             // Admin / Exec Mapping
+             if (normalized === 'admin' || normalized.includes('exec')) return UserRole.EXECUTIVE_STAFF;
+             
+             // Other Roles
+             if (normalized.includes('board')) return UserRole.BOARD_OF_DIRECTORS;
+             if (normalized.includes('auditor')) return UserRole.EXTERNAL_AUDITOR;
+             if (normalized.includes('cfo') || normalized.includes('treasurer')) return UserRole.CFO_TREASURER;
+             if (normalized.includes('support')) return UserRole.SUPPORT_STAFF;
+             if (normalized.includes('regional')) return UserRole.REGIONAL_COMMANDER;
+             if (normalized.includes('squadron')) return UserRole.SQUADRON_COMMANDER;
+             if (normalized.includes('reviewer') || normalized.includes('instructor')) return UserRole.REVIEWER_INSTRUCTOR;
+             if (normalized.includes('parent')) return UserRole.PARENT_GUARDIAN;
+             
+             return UserRole.CADET_MEMBER;
+          };
+
+          const userRole = mapRole(rawRole);
+          
           setTimeout(() => {
-            // Use MOCK_USERS for rich UI data if available, otherwise fallback to basic user data
+            // Use MOCK_USERS for rich UI data if available and matches username, otherwise fallback to backend data
             const uiUser = MOCK_USERS[username] || {
-              id: String(data.user_id),
-              username: username,
-              name: username, // Fallback name
-              role: data.role, // Use role from backend
-              accessLevel: 'L1',
+              id: String(backendUser.user_id || backendUser.id || 'u-real'),
+              username: backendUser.username || username,
+              name: backendUser.username || username, // Fallback name
+              role: userRole, // Use mapped role from backend
+              accessLevel: (userRole === UserRole.EXECUTIVE_STAFF || userRole === UserRole.BOARD_OF_DIRECTORS) ? 'L5' : 'L1',
             };
             
             const hydratedUser = hydrateUserPermissions(uiUser);
