@@ -19,26 +19,32 @@ import {
   Scale,
   Eye,
   Lock,
-  FileText
+  FileText,
+  Activity,
+  Terminal,
+  Gavel,
+  ChevronRight
 } from 'lucide-react';
 import { MetricCard, Card, SectionHeader, SecurityBadges, Badge } from '../components/Shared';
 
-// --- Regulatory Badge Component (Local Definition) ---
+// --- Regulatory Badge Component (Futuristic) ---
 const RegBadge: React.FC<{ label: string; code: string; status: 'pass' | 'warn' | 'fail' | 'info'; value?: string }> = ({ label, code, status, value }) => {
   const colors = {
-    pass: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500',
-    warn: 'bg-amber-500/10 border-amber-500/30 text-amber-500',
-    fail: 'bg-red-500/10 border-red-500/30 text-red-500',
-    info: 'bg-[#3684ca]/10 border-[#3684ca]/30 text-[#3684ca]',
+    pass: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.1)]',
+    warn: 'bg-amber-500/10 border-amber-500/30 text-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.1)]',
+    fail: 'bg-red-500/10 border-red-500/30 text-red-500 shadow-[0_0_10px_rgba(239,68,68,0.1)]',
+    info: 'bg-[#3684ca]/10 border-[#3684ca]/30 text-[#3684ca] shadow-[0_0_10px_rgba(54,132,202,0.1)]',
   };
 
   return (
-    <div className={`flex flex-col border rounded px-2 py-1.5 min-w-[90px] ${colors[status]}`}>
-      <div className="flex justify-between items-center">
-        <span className="text-[9px] font-bold uppercase tracking-wider">{label}</span>
-        {value && <span className="text-[9px] font-mono font-bold ml-1">{value}</span>}
+    <div className={`flex flex-col border rounded-sm px-3 py-2 min-w-[100px] backdrop-blur-sm ${colors[status]}`}>
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-[9px] font-bold uppercase tracking-widest opacity-80">{label}</span>
       </div>
-      <span className="text-[8px] font-mono opacity-70 mt-0.5">{code}</span>
+      <div className="flex justify-between items-end">
+         <span className="text-[8px] font-mono opacity-60">{code}</span>
+         {value && <span className="text-xs font-mono font-bold">{value}</span>}
+      </div>
     </div>
   );
 };
@@ -94,105 +100,109 @@ const MISSION_CLOSURE = [
 
 const SquadronView: React.FC = () => {
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-20">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20 font-sans">
       <SectionHeader title="Squadron Command" subtitle="Compliance Gate • Attestation Tool v3.1" />
       <SecurityBadges />
 
-      {/* --- Top Level Compliance Indicators --- */}
+      {/* --- Top Level Compliance Indicators (System Nodes) --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-         <Card className="flex flex-col justify-center p-4 border-l-4 border-l-emerald-500">
-            <div className="flex justify-between items-start mb-2">
-               <ShieldCheck className="text-emerald-500" size={20} />
-               <span className="text-[10px] font-mono text-sfcc-secondary">CCT 20-1-C</span>
+         {[
+            { 
+               icon: ShieldCheck, color: 'text-emerald-500', 
+               code: 'CCT 20-1-C', label: 'Succession Plan', value: 'CURRENT', 
+               glow: 'shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+            },
+            { 
+               icon: Users, color: 'text-[#3684ca]', 
+               code: 'SAFETY STD', label: 'Two-Deep Lead', value: '100% OK', 
+               glow: 'shadow-[0_0_15px_rgba(54,132,202,0.2)]'
+            },
+            { 
+               icon: FileWarning, color: 'text-amber-500', 
+               code: '7-DAY RULE', label: 'Remediation', value: '2 ACTIVE', 
+               glow: 'shadow-[0_0_15px_rgba(245,158,11,0.2)]'
+            },
+            { 
+               icon: ClipboardCheck, color: 'text-[#96a3ae]', 
+               code: 'CCC 20-8-1', label: 'Pre-Flight', value: 'VERIFIED', 
+               glow: ''
+            }
+         ].map((card, i) => (
+            <div key={i} className={`bg-[#191818]/80 backdrop-blur-md border border-[#5f686e]/30 p-4 rounded-sm relative overflow-hidden group ${card.glow}`}>
+               <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-[#5f686e]/50 to-transparent group-hover:via-[#3684ca] transition-all"></div>
+               <div className="flex justify-between items-start mb-3">
+                  <card.icon className={`${card.color}`} size={24} />
+                  <span className="text-[9px] font-mono text-[#5f686e] border border-[#5f686e]/30 px-1.5 rounded">{card.code}</span>
+               </div>
+               <div className="text-xs font-bold text-[#96a3ae] uppercase tracking-widest mb-1">{card.label}</div>
+               <div className={`text-lg font-bold font-mono ${card.color}`}>{card.value}</div>
             </div>
-            <div className="text-sm font-bold text-white uppercase tracking-wider">Succession Plan</div>
-            <div className="text-xs font-mono text-emerald-500 mt-1">STATUS: CURRENT</div>
-         </Card>
-
-         <Card className="flex flex-col justify-center p-4 border-l-4 border-l-sfcc-accent">
-            <div className="flex justify-between items-start mb-2">
-               <Users className="text-sfcc-accent" size={20} />
-               <span className="text-[10px] font-mono text-sfcc-secondary">SAFETY STD</span>
-            </div>
-            <div className="text-sm font-bold text-white uppercase tracking-wider">Two-Deep Leadership</div>
-            <div className="text-xs font-mono text-sfcc-accent mt-1">EPA/MTE: 100% COMPLIANT</div>
-         </Card>
-
-         <Card className="flex flex-col justify-center p-4 border-l-4 border-l-sfcc-warning">
-            <div className="flex justify-between items-start mb-2">
-               <FileWarning className="text-sfcc-warning" size={20} />
-               <span className="text-[10px] font-mono text-sfcc-secondary">7-DAY RULE</span>
-            </div>
-            <div className="text-sm font-bold text-white uppercase tracking-wider">Remediation Queue</div>
-            <div className="text-xs font-mono text-sfcc-warning mt-1">2 OPEN ACTIONS</div>
-         </Card>
-
-         <Card className="flex flex-col justify-center p-4 border-l-4 border-l-sfcc-border">
-            <div className="flex justify-between items-start mb-2">
-               <ClipboardCheck className="text-sfcc-secondary" size={20} />
-               <span className="text-[10px] font-mono text-sfcc-secondary">CCC 20-8-1</span>
-            </div>
-            <div className="text-sm font-bold text-white uppercase tracking-wider">Pre-Flight Checks</div>
-            <div className="text-xs font-mono text-sfcc-secondary mt-1">LAST: 2023-11-01</div>
-         </Card>
+         ))}
       </div>
 
       {/* --- Main Workflow: Artifact Attestation Gate --- */}
-      <Card title="Artifact Review & Attestation Gate">
+      <div className="bg-[#191818]/80 backdrop-blur-md border border-[#3684ca]/30 rounded-sm relative overflow-hidden">
+         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#3684ca] to-transparent opacity-50"></div>
+         
+         <div className="p-5 border-b border-[#5f686e]/20 flex justify-between items-center">
+            <h3 className="text-sm font-bold text-white uppercase tracking-widest flex items-center gap-2">
+               <Gavel size={16} className="text-[#3684ca]" /> Artifact Review & Attestation Gate
+            </h3>
+            <div className="text-[10px] font-mono text-[#5f686e]">PENDING: {REVIEW_QUEUE.length}</div>
+         </div>
+
          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-left text-sm border-separate border-spacing-y-1 px-2 pb-2">
                <thead>
-                  <tr className="border-b border-sfcc-border text-sfcc-secondary font-mono text-[10px] uppercase tracking-wider">
-                     <th className="pb-3 pl-2">Cadet / Artifact</th>
-                     <th className="pb-3">Data Integrity (CCR 20-4)</th>
-                     <th className="pb-3">Academic Integrity</th>
-                     <th className="pb-3">Rubric Score</th>
-                     <th className="pb-3 text-right pr-2">Command Action</th>
+                  <tr className="text-[#5f686e] font-mono text-[10px] uppercase tracking-wider">
+                     <th className="pb-2 pl-4">Cadet Identity</th>
+                     <th className="pb-2">Data Integrity (CCR 20-4)</th>
+                     <th className="pb-2">Academic Checks</th>
+                     <th className="pb-2">Score</th>
+                     <th className="pb-2 text-right pr-4">Command Action</th>
                   </tr>
                </thead>
-               <tbody className="divide-y divide-sfcc-border">
+               <tbody>
                   {REVIEW_QUEUE.map((row, i) => (
-                     <tr key={i} className="hover:bg-sfcc-dark/50 group">
-                        <td className="py-4 pl-2">
-                           <div className="font-bold text-sfcc-primary text-xs">{row.cadet}</div>
-                           <div className="text-[10px] text-sfcc-secondary">{row.artifact}</div>
-                           <Badge status="neutral">{row.loe}</Badge>
+                     <tr key={i} className="group bg-[#252525]/30 hover:bg-[#252525] transition-all">
+                        <td className="py-3 pl-4 rounded-l-sm border-l-2 border-transparent hover:border-[#3684ca]">
+                           <div className="font-bold text-white text-xs">{row.cadet}</div>
+                           <div className="text-[10px] text-[#96a3ae] font-mono">{row.artifact}</div>
+                           <div className="mt-1"><Badge status="neutral">{row.loe}</Badge></div>
                         </td>
-                        <td className="py-4">
+                        <td className="py-3">
                            {row.piiStatus === 'PENDING' ? (
-                              <button className="flex items-center gap-2 px-3 py-1.5 bg-sfcc-accent/10 border border-sfcc-accent/30 text-sfcc-accent hover:bg-sfcc-accent hover:text-white rounded transition-colors text-[10px] font-bold uppercase tracking-wider">
+                              <button className="flex items-center gap-2 px-3 py-1.5 bg-[#3684ca]/10 border border-[#3684ca]/30 text-[#3684ca] hover:bg-[#3684ca] hover:text-white rounded-sm transition-all text-[9px] font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(54,132,202,0.1)]">
                                  <FileSignature size={12} />
                                  Attest CCC 20-4-2
                               </button>
                            ) : (
-                              <RegBadge label="PII Check" code="CCC 20-4-2" status="pass" value="SIGNED" />
+                              <div className="flex items-center gap-2 text-emerald-500">
+                                 <Lock size={12} />
+                                 <span className="text-[10px] font-bold uppercase tracking-wider">Sanitized</span>
+                              </div>
                            )}
                         </td>
-                        <td className="py-4">
-                           <RegBadge 
-                              label="AI Disclosure" 
-                              code="Mandatory" 
-                              status={row.aiDisclosure === 'VERIFIED' ? 'pass' : 'fail'} 
-                              value={row.aiDisclosure}
-                           />
-                        </td>
-                        <td className="py-4">
-                           <div className={`text-lg font-bold font-mono ${row.score < 2 ? 'text-sfcc-danger' : 'text-sfcc-success'}`}>
-                              {row.score}/4
+                        <td className="py-3">
+                           <div className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider ${row.aiDisclosure === 'VERIFIED' ? 'text-emerald-500' : 'text-red-500'}`}>
+                              {row.aiDisclosure === 'VERIFIED' ? <CheckCircle2 size={12} /> : <AlertTriangle size={12} />}
+                              AI: {row.aiDisclosure}
                            </div>
-                           {row.score < 2 && (
-                              <span className="text-[9px] font-bold text-sfcc-danger uppercase">Remediation Req.</span>
-                           )}
                         </td>
-                        <td className="py-4 text-right pr-2">
+                        <td className="py-3">
+                           <div className={`text-xl font-bold font-mono ${row.score < 2 ? 'text-red-500' : 'text-emerald-500'}`}>
+                              {row.score}<span className="text-sm text-[#5f686e]">/4</span>
+                           </div>
+                        </td>
+                        <td className="py-3 text-right pr-4 rounded-r-sm">
                            {row.score < 2 ? (
-                              <button className="bg-sfcc-danger hover:bg-red-600 text-white px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-red-900/20">
+                              <button className="bg-red-500/10 border border-red-500/30 hover:bg-red-500 text-red-500 hover:text-white px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all">
                                  Assign Remediation
                               </button>
                            ) : row.piiStatus === 'PENDING' ? (
-                              <span className="text-[10px] text-sfcc-secondary italic">Awaiting Attestation</span>
+                              <span className="text-[10px] text-[#5f686e] font-mono italic">Awaiting Attestation</span>
                            ) : (
-                              <button className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-emerald-900/20 flex items-center gap-2 ml-auto">
+                              <button className="bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500 text-emerald-500 hover:text-white px-4 py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all flex items-center gap-2 ml-auto">
                                  <Star size={12} /> Promote
                               </button>
                            )}
@@ -202,28 +212,28 @@ const SquadronView: React.FC = () => {
                </tbody>
             </table>
          </div>
-      </Card>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
          
          {/* --- Remediation & Waivers --- */}
          <div className="space-y-6">
-            <Card title="Mandatory Remediation Queue">
+            <Card title="Mandatory Remediation Queue" variant="glass">
                <div className="space-y-3">
                   {REMEDIATION_QUEUE.map((item, i) => (
-                     <div key={i} className="flex justify-between items-center p-3 bg-sfcc-dark border border-sfcc-border rounded hover:border-sfcc-warning transition-colors">
+                     <div key={i} className="flex justify-between items-center p-3 bg-[#191818] border border-[#5f686e]/30 rounded-sm hover:border-amber-500 transition-colors group">
                         <div>
                            <div className="flex items-center gap-2">
-                              <span className="text-xs font-bold text-sfcc-primary">{item.cadet}</span>
-                              {item.status === 'OVERDUE' && <Badge status="danger">OVERDUE</Badge>}
+                              <span className="text-xs font-bold text-white group-hover:text-amber-500 transition-colors">{item.cadet}</span>
+                              {item.status === 'OVERDUE' && <span className="text-[9px] font-bold bg-red-500 text-white px-1 rounded">OVERDUE</span>}
                            </div>
-                           <div className="text-[10px] text-sfcc-secondary mt-1">
-                              Trigger: <span className="text-sfcc-primary">{item.trigger}</span>
+                           <div className="text-[10px] text-[#96a3ae] mt-1 font-mono">
+                              Trigger: <span className="text-white">{item.trigger}</span>
                            </div>
                         </div>
                         <div className="text-right">
-                           <div className="text-[10px] font-bold text-sfcc-secondary uppercase tracking-wider">Deadline</div>
-                           <div className={`font-mono text-xs font-bold ${item.status === 'OVERDUE' ? 'text-sfcc-danger' : 'text-sfcc-warning'}`}>
+                           <div className="text-[9px] font-bold text-[#5f686e] uppercase tracking-wider">Deadline</div>
+                           <div className={`font-mono text-xs font-bold ${item.status === 'OVERDUE' ? 'text-red-500' : 'text-amber-500'}`}>
                               {item.deadline}
                            </div>
                         </div>
@@ -232,19 +242,19 @@ const SquadronView: React.FC = () => {
                </div>
             </Card>
 
-            <Card title="Waiver Log (CCT 20-10T)">
-               <div className="space-y-2">
+            <Card title="Waiver Log (CCT 20-10T)" variant="glass">
+               <div className="space-y-1">
                   {WAIVER_QUEUE.map((w, i) => (
-                     <div key={i} className="flex justify-between items-center p-2 border-b border-sfcc-border/50 last:border-0">
+                     <div key={i} className="flex justify-between items-center p-3 border-b border-[#5f686e]/20 last:border-0 hover:bg-[#252525]/50 transition-colors">
                         <div>
-                           <span className="text-xs font-mono text-sfcc-secondary block">{w.id}</span>
-                           <span className="text-xs font-bold text-sfcc-primary">{w.type}</span>
+                           <span className="text-[10px] font-mono text-[#3684ca] block mb-0.5">{w.id}</span>
+                           <span className="text-xs font-bold text-white">{w.type}</span>
                         </div>
                         <Badge status={w.status.includes('PENDING') ? 'warning' : 'success'}>{w.status}</Badge>
                      </div>
                   ))}
-                  <button className="w-full mt-2 py-2 border border-dashed border-sfcc-border text-sfcc-secondary hover:text-sfcc-primary hover:border-sfcc-primary text-[10px] uppercase font-bold tracking-wider rounded transition-all">
-                     + Draft New Waiver
+                  <button className="w-full mt-4 py-3 border border-dashed border-[#5f686e]/50 text-[#96a3ae] hover:text-white hover:border-white text-[10px] uppercase font-bold tracking-widest rounded-sm transition-all flex items-center justify-center gap-2">
+                     <FilePlus size={14} /> Draft New Waiver
                   </button>
                </div>
             </Card>
@@ -252,15 +262,15 @@ const SquadronView: React.FC = () => {
 
          {/* --- Operational Checklists & Closure --- */}
          <div className="space-y-6">
-            <Card title="Mission / AAR Closure Queue">
+            <Card title="Mission / AAR Closure Queue" variant="glass">
                <div className="space-y-4">
                   {MISSION_CLOSURE.map((m, i) => (
-                     <div key={i} className="bg-sfcc-dark p-3 rounded border border-sfcc-border">
-                        <div className="flex justify-between mb-2">
-                           <span className="text-xs font-bold text-white">{m.event}</span>
-                           <span className="text-[10px] font-mono text-sfcc-secondary">{m.date}</span>
+                     <div key={i} className="bg-[#191818] p-4 rounded-sm border border-[#5f686e]/30 relative overflow-hidden">
+                        <div className="flex justify-between mb-3">
+                           <span className="text-sm font-bold text-white tracking-wide">{m.event}</span>
+                           <span className="text-[10px] font-mono text-[#5f686e]">{m.date}</span>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-3 mb-4">
                            <RegBadge 
                               label="48h AAR" 
                               code="Mandatory" 
@@ -274,8 +284,8 @@ const SquadronView: React.FC = () => {
                               value={m.supervision}
                            />
                         </div>
-                        <button className="w-full mt-3 bg-sfcc-panel hover:bg-sfcc-accent hover:text-white border border-sfcc-border text-sfcc-secondary py-1.5 rounded text-[10px] font-bold uppercase tracking-wider transition-colors">
-                           Attach After Action Report
+                        <button className="w-full bg-[#252525] hover:bg-[#3684ca] hover:text-white border border-[#5f686e]/30 hover:border-[#3684ca] text-[#96a3ae] py-2 rounded-sm text-[10px] font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                           <FileText size={14} /> Attach Report
                         </button>
                      </div>
                   ))}
@@ -283,16 +293,16 @@ const SquadronView: React.FC = () => {
             </Card>
 
             <Card title="Operational Checklists">
-               <div className="grid grid-cols-2 gap-3">
-                  <button className="p-3 bg-sfcc-dark border border-sfcc-border hover:border-sfcc-accent hover:bg-sfcc-accent/5 rounded transition-all text-left group">
-                     <ClipboardCheck className="text-sfcc-secondary group-hover:text-sfcc-accent mb-2" size={20} />
-                     <div className="text-[10px] font-mono text-sfcc-secondary">CCC 20-8-1</div>
-                     <div className="text-xs font-bold text-white group-hover:text-sfcc-accent">Safety Pre-Flight</div>
+               <div className="grid grid-cols-2 gap-4">
+                  <button className="p-4 bg-[#191818] border border-[#5f686e]/30 hover:border-[#3684ca] hover:bg-[#3684ca]/5 rounded-sm transition-all text-left group">
+                     <ClipboardCheck className="text-[#5f686e] group-hover:text-[#3684ca] mb-3 transition-colors" size={24} />
+                     <div className="text-[9px] font-mono text-[#5f686e] mb-1">CCC 20-8-1</div>
+                     <div className="text-xs font-bold text-white group-hover:text-[#3684ca] transition-colors">Safety Pre-Flight</div>
                   </button>
-                  <button className="p-3 bg-sfcc-dark border border-sfcc-border hover:border-sfcc-accent hover:bg-sfcc-accent/5 rounded transition-all text-left group">
-                     <Scale className="text-sfcc-secondary group-hover:text-sfcc-accent mb-2" size={20} />
-                     <div className="text-[10px] font-mono text-sfcc-secondary">CCC 20-7-1</div>
-                     <div className="text-xs font-bold text-white group-hover:text-sfcc-accent">Oral Defense</div>
+                  <button className="p-4 bg-[#191818] border border-[#5f686e]/30 hover:border-[#3684ca] hover:bg-[#3684ca]/5 rounded-sm transition-all text-left group">
+                     <Scale className="text-[#5f686e] group-hover:text-[#3684ca] mb-3 transition-colors" size={24} />
+                     <div className="text-[9px] font-mono text-[#5f686e] mb-1">CCC 20-7-1</div>
+                     <div className="text-xs font-bold text-white group-hover:text-[#3684ca] transition-colors">Oral Defense</div>
                   </button>
                </div>
             </Card>
