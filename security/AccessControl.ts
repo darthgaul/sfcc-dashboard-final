@@ -13,10 +13,27 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.VIEW_AUDITED_FINANCIALS,
   ],
   [UserRole.EXECUTIVE_STAFF]: [
+    // GOD MODE: All permissions enabled for Executive Staff
     Permission.VIEW_HQ_DASHBOARD,
+    Permission.VIEW_REGIONAL_DASHBOARD,
+    Permission.VIEW_SQUADRON_DASHBOARD,
+    Permission.VIEW_CADET_DASHBOARD,
+    Permission.VIEW_PARENT_DASHBOARD,
+    Permission.VIEW_ALL_FINANCIALS,
+    Permission.VIEW_AUDITED_FINANCIALS,
     Permission.VIEW_PII_SENSITIVE,
     Permission.MANAGE_WORKFLOWS,
     Permission.APPROVE_ARCHIVAL,
+    Permission.EXECUTE_FINANCIAL_DISBURSEMENT,
+    Permission.ISSUE_CORRECTIVE_ORDER,
+    Permission.APPROVE_LOCAL_WAIVER,
+    Permission.SCORE_ARTIFACT,
+    Permission.ATTEST_SAFETY_OPSEC,
+    Permission.VIEW_OWN_PORTFOLIO,
+    Permission.UPDATE_OWN_PORTFOLIO,
+    Permission.APPROVE_POLICY_AMENDMENT,
+    Permission.MANAGE_RUBRIC_SCHEMA,
+    Permission.VIEW_LOCAL_SQUADRON_DATA,
   ],
   [UserRole.CFO_TREASURER]: [
     Permission.VIEW_HQ_DASHBOARD,
@@ -67,12 +84,6 @@ export function hasPermission(
   permission: Permission, 
   resourceScope?: { regionId?: string; squadronId?: string; cadetId?: string }
 ): boolean {
-  // ADMIN OVERRIDE: Admin user has all permissions
-  // This handles the default admin user created by the backend which might have raw string role 'admin'
-  if (user?.username === 'admin' || (user?.role as any) === 'admin') {
-    return true;
-  }
-
   if (!user || !user.role) return false;
 
   // 1. Check Role-based Permissions

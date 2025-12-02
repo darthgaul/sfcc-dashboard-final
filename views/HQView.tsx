@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Users, 
   Shield, 
@@ -16,7 +16,10 @@ import {
   Search,
   Lock,
   ArrowRight,
-  PieChart as PieChartIcon
+  X,
+  FileSignature,
+  Download,
+  ChevronRight
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { MetricCard, Card, SectionHeader, SecurityBadges, Badge } from '../components/Shared';
@@ -40,9 +43,175 @@ const assetData = [
   { name: 'Missing', value: 5, color: '#ef4444' },
 ];
 
+// Sample Action Data
+const ACTION_ITEMS = [
+  { 
+    id: 'ACT-001', 
+    title: 'Waiver: J. Smith', 
+    type: 'Exemption', 
+    req: 'SQ-102', 
+    date: '2023-11-01',
+    details: 'Requesting exemption from 1-mile run due to documented medical injury (ACL tear). Physican note attached.',
+    status: 'PENDING' 
+  },
+  { 
+    id: 'ACT-002', 
+    title: 'Payment: XYZ Corp', 
+    type: 'Finance', 
+    req: 'HQ-LOG', 
+    date: '2023-11-02',
+    details: 'Vendor payment for Region 1 encampment supplies (MREs, Water). Amount: $4,500. Budget Code: OPS-23.',
+    status: 'PENDING' 
+  },
+  { 
+    id: 'ACT-003', 
+    title: 'Promo Board: SQ-304', 
+    type: 'Personnel', 
+    req: 'REG-NE', 
+    date: '2023-11-03',
+    details: 'Promotion board results for SQ-304. 12 Cadets recommended for advancement. All requirements verified.',
+    status: 'PENDING' 
+  },
+  { 
+    id: 'ACT-004', 
+    title: 'Travel Auth: Col. Miller', 
+    type: 'Logistics', 
+    req: 'REG-SW', 
+    date: '2023-11-04',
+    details: 'Authorization for site visit to Space Force Base via commercial air. Est Cost: $800.',
+    status: 'PENDING' 
+  },
+  { 
+    id: 'ACT-005', 
+    title: 'Policy Memo: Uniforms', 
+    type: 'Governance', 
+    req: 'HQ-DO', 
+    date: '2023-11-05',
+    details: 'Final draft of Uniform Manual v2.1 for signature and distribution.',
+    status: 'PENDING' 
+  }
+];
+
+// Mock Governance Data
+const ARCHIVE_RECORDS = [
+  { id: 'REC-23-001', title: 'FY23 Financial Audit Report', date: '2023-10-15', type: 'PDF', size: '2.4 MB' },
+  { id: 'REC-23-002', title: 'Board Meeting Minutes Q3', date: '2023-09-30', type: 'DOCX', size: '1.1 MB' },
+  { id: 'REC-23-003', title: 'Unit Activation Order: SQ-304', date: '2023-08-12', type: 'PDF', size: '0.8 MB' },
+  { id: 'REC-23-004', title: 'Safety Inspection Log', date: '2023-11-01', type: 'XLSX', size: '3.2 MB' },
+];
+
+const PLAYBOOK_TOC = [
+  { chapter: '1.0', title: 'Mission & Vision', page: 3 },
+  { chapter: '2.0', title: 'Organizational Structure', page: 8 },
+  { chapter: '3.0', title: 'Unit Operations', page: 15 },
+  { chapter: '3.1', title: 'Weekly Drill Schedule', page: 16 },
+  { chapter: '3.2', title: 'Uniform Regulations', page: 22 },
+  { chapter: '4.0', title: 'Emergency Protocols', page: 45 },
+];
+
+const BYLAWS_ARTICLES = [
+  { article: 'ARTICLE I', title: 'NAME AND PURPOSES', content: 'The name of the corporation shall be Space Force Cadet Corps. The purpose of the corporation is to provide leadership training and STEM education to youth...' },
+  { article: 'ARTICLE II', title: 'OFFICES', content: 'The principal office of the Corporation shall be located at HQ SFCC. The Corporation may have other offices as the Board of Directors may determine...' },
+  { article: 'ARTICLE III', title: 'MEMBERSHIP', content: 'Membership in the Corporation shall be open to all individuals who meet the criteria established by the Board of Directors, without regard to race, color, religion...' },
+  { article: 'ARTICLE IV', title: 'BOARD OF DIRECTORS', content: 'The business and affairs of the Corporation shall be managed by its Board of Directors. The Board shall consist of not less than three directors...' },
+];
+
+
 const HQView: React.FC = () => {
+  const [selectedAction, setSelectedAction] = useState<typeof ACTION_ITEMS[0] | null>(null);
+  const [showAllActions, setShowAllActions] = useState(false);
+  const [activeGovernanceModal, setActiveGovernanceModal] = useState<'archive' | 'playbook' | 'bylaws' | null>(null);
+
+  const renderGovernanceContent = () => {
+    switch(activeGovernanceModal) {
+      case 'archive':
+        return (
+          <div className="space-y-4">
+             <div className="flex gap-2 mb-4">
+                <div className="relative flex-1">
+                   <Search size={14} className="absolute left-3 top-2.5 text-sfcc-secondary" />
+                   <input type="text" placeholder="Search records..." className="w-full bg-sfcc-dark border border-sfcc-border rounded py-2 pl-9 pr-3 text-sm text-sfcc-primary focus:outline-none focus:border-sfcc-accent" />
+                </div>
+                <button className="px-4 py-2 bg-sfcc-panel border border-sfcc-border text-sfcc-primary text-sm rounded font-bold uppercase hover:bg-sfcc-dark transition-colors">Filter</button>
+             </div>
+             <table className="w-full text-left text-sm">
+                <thead>
+                   <tr className="border-b border-sfcc-border text-sfcc-secondary font-mono text-xs uppercase tracking-wider">
+                      <th className="pb-3 pl-2">ID</th>
+                      <th className="pb-3">Document Title</th>
+                      <th className="pb-3">Date</th>
+                      <th className="pb-3 text-right pr-2">Action</th>
+                   </tr>
+                </thead>
+                <tbody className="divide-y divide-sfcc-border">
+                   {ARCHIVE_RECORDS.map((rec, i) => (
+                      <tr key={i} className="hover:bg-sfcc-dark/50">
+                         <td className="py-3 pl-2 font-mono text-sfcc-secondary">{rec.id}</td>
+                         <td className="py-3">
+                            <div className="text-sfcc-primary font-bold">{rec.title}</div>
+                            <div className="text-[10px] text-sfcc-secondary font-mono">{rec.type} • {rec.size}</div>
+                         </td>
+                         <td className="py-3 font-mono text-sfcc-secondary">{rec.date}</td>
+                         <td className="py-3 text-right pr-2">
+                            <button className="text-sfcc-accent hover:text-white p-2">
+                               <Download size={16} />
+                            </button>
+                         </td>
+                      </tr>
+                   ))}
+                </tbody>
+             </table>
+          </div>
+        );
+      case 'playbook':
+        return (
+          <div className="space-y-2">
+             <div className="p-4 bg-sfcc-dark border border-sfcc-border rounded mb-4">
+                <h3 className="text-lg font-bold text-sfcc-primary uppercase tracking-widest mb-1">Operational Playbook v4.1</h3>
+                <p className="text-xs text-sfcc-secondary font-mono">Effective Date: 2023-01-01</p>
+             </div>
+             <div className="space-y-1">
+                {PLAYBOOK_TOC.map((chapter, i) => (
+                   <button key={i} className="w-full flex items-center justify-between p-3 hover:bg-sfcc-dark rounded border border-transparent hover:border-sfcc-border group transition-all">
+                      <div className="flex items-center gap-4">
+                         <span className="font-mono text-sfcc-secondary text-xs w-8">{chapter.chapter}</span>
+                         <span className="text-sm font-bold text-sfcc-primary group-hover:text-sfcc-accent">{chapter.title}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                         <span className="text-xs font-mono text-sfcc-secondary">pg {chapter.page}</span>
+                         <ChevronRight size={14} className="text-sfcc-secondary group-hover:text-sfcc-accent" />
+                      </div>
+                   </button>
+                ))}
+             </div>
+          </div>
+        );
+      case 'bylaws':
+        return (
+          <div className="space-y-6 pr-2">
+             <div className="text-center border-b border-sfcc-border pb-6">
+                <Gavel size={32} className="mx-auto text-sfcc-secondary mb-3" />
+                <h3 className="text-xl font-bold text-sfcc-primary uppercase tracking-widest">Bylaws of the SFCC</h3>
+                <p className="text-xs text-sfcc-secondary font-mono mt-2">Adopted by the Board of Directors</p>
+             </div>
+             <div className="space-y-8">
+                {BYLAWS_ARTICLES.map((art, i) => (
+                   <div key={i}>
+                      <h4 className="text-sm font-bold text-sfcc-accent uppercase tracking-wider mb-2">{art.article} - {art.title}</h4>
+                      <p className="text-sm text-sfcc-secondary leading-relaxed text-justify border-l-2 border-sfcc-border pl-4">
+                         {art.content}
+                      </p>
+                   </div>
+                ))}
+             </div>
+          </div>
+        );
+      default: return null;
+    }
+  };
+
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 pb-10">
+    <div className="space-y-6 animate-in fade-in duration-500 pb-10 relative">
       <SectionHeader 
         title="HQ Dashboard" 
         subtitle="Secure Connection • Neutral Portfolio v2.5" 
@@ -122,31 +291,34 @@ const HQView: React.FC = () => {
           </div>
         </Card>
 
-        {/* Col 3: Action Queue (New) */}
+        {/* Col 3: Action Queue (Interactive) */}
         <Card title="Action Queue">
           <div className="space-y-4">
-             {[
-               { title: 'Waiver: J. Smith', type: 'Exemption', req: 'SQ-102' },
-               { title: 'Payment: XYZ Corp', type: 'Finance', req: 'HQ-LOG' },
-               { title: 'Promo Board: SQ-304', type: 'Personnel', req: 'REG-NE' }
-             ].map((item, i) => (
-               <div key={i} className="flex items-center justify-between p-3 bg-sfcc-dark/50 rounded border border-sfcc-border hover:border-sfcc-secondary transition-colors">
+             {ACTION_ITEMS.slice(0, 3).map((item, i) => (
+               <button 
+                key={i} 
+                onClick={() => setSelectedAction(item)}
+                className="w-full text-left flex items-center justify-between p-3 bg-sfcc-dark/50 rounded border border-sfcc-border hover:border-sfcc-secondary hover:bg-sfcc-panel transition-all group"
+               >
                  <div>
-                   <p className="text-sm font-bold text-sfcc-primary">{item.title}</p>
+                   <p className="text-sm font-bold text-sfcc-primary group-hover:text-white">{item.title}</p>
                    <p className="text-[10px] text-sfcc-secondary font-mono uppercase mt-0.5">{item.type} • {item.req}</p>
                  </div>
                  <div className="flex gap-2">
-                   <button className="text-[10px] uppercase font-bold text-sfcc-secondary hover:text-sfcc-primary px-2 py-1 border border-sfcc-border rounded hover:bg-sfcc-panel transition-colors">
+                   <div className="text-[10px] uppercase font-bold text-sfcc-secondary px-2 py-1 border border-sfcc-border rounded bg-sfcc-dark">
                      View
-                   </button>
-                   <button className="text-[10px] uppercase font-bold text-sfcc-dark bg-emerald-500 hover:bg-emerald-400 px-2 py-1 rounded transition-colors">
+                   </div>
+                   <div className="text-[10px] uppercase font-bold text-sfcc-dark bg-emerald-500 px-2 py-1 rounded flex items-center gap-1">
                      Sign
-                   </button>
+                   </div>
                  </div>
-               </div>
+               </button>
              ))}
              <div className="pt-2 text-center">
-                <button className="text-xs text-sfcc-secondary hover:text-sfcc-accent flex items-center justify-center gap-1 w-full uppercase tracking-wider font-bold">
+                <button 
+                  onClick={() => setShowAllActions(true)}
+                  className="text-xs text-sfcc-secondary hover:text-sfcc-accent flex items-center justify-center gap-1 w-full uppercase tracking-wider font-bold p-2 hover:bg-sfcc-dark rounded"
+                >
                   View All Actions <ArrowRight size={12} />
                 </button>
              </div>
@@ -156,25 +328,33 @@ const HQView: React.FC = () => {
 
       {/* Governance & Operations Section */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        
         {/* Governance & Records */}
         <Card title="Governance & Records" className="lg:col-span-1">
           <div className="grid gap-3">
-             <button className="flex items-center gap-3 p-3 text-left rounded bg-sfcc-dark border border-sfcc-border hover:bg-sfcc-panel transition-all group">
+             <button 
+                onClick={() => setActiveGovernanceModal('archive')}
+                className="flex items-center gap-3 p-3 text-left rounded bg-sfcc-dark border border-sfcc-border hover:bg-sfcc-panel transition-all group"
+             >
                 <Archive size={18} className="text-sfcc-secondary group-hover:text-sfcc-accent" />
                 <div>
                    <span className="block text-sm font-bold text-sfcc-primary group-hover:text-sfcc-primary">Official Archive</span>
                    <span className="text-[10px] text-sfcc-secondary font-mono">FY23 Records</span>
                 </div>
              </button>
-             <button className="flex items-center gap-3 p-3 text-left rounded bg-sfcc-dark border border-sfcc-border hover:bg-sfcc-panel transition-all group">
+             <button 
+                onClick={() => setActiveGovernanceModal('playbook')}
+                className="flex items-center gap-3 p-3 text-left rounded bg-sfcc-dark border border-sfcc-border hover:bg-sfcc-panel transition-all group"
+             >
                 <BookOpen size={18} className="text-sfcc-secondary group-hover:text-sfcc-accent" />
                 <div>
                    <span className="block text-sm font-bold text-sfcc-primary group-hover:text-sfcc-primary">Operational Playbook</span>
                    <span className="text-[10px] text-sfcc-secondary font-mono">v4.1 Active</span>
                 </div>
              </button>
-             <button className="flex items-center gap-3 p-3 text-left rounded bg-sfcc-dark border border-sfcc-border hover:bg-sfcc-panel transition-all group">
+             <button 
+                onClick={() => setActiveGovernanceModal('bylaws')}
+                className="flex items-center gap-3 p-3 text-left rounded bg-sfcc-dark border border-sfcc-border hover:bg-sfcc-panel transition-all group"
+             >
                 <Gavel size={18} className="text-sfcc-secondary group-hover:text-sfcc-accent" />
                 <div>
                    <span className="block text-sm font-bold text-sfcc-primary group-hover:text-sfcc-primary">Org. Bylaws</span>
@@ -353,6 +533,139 @@ const HQView: React.FC = () => {
            </div>
         </Card>
       </div>
+
+      {/* --- Action Details Modal --- */}
+      {selectedAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setSelectedAction(null)}></div>
+           <div className="relative bg-sfcc-panel border border-sfcc-border w-full max-w-lg rounded-sm shadow-2xl animate-in zoom-in-95 duration-200">
+              <button onClick={() => setSelectedAction(null)} className="absolute top-4 right-4 text-sfcc-secondary hover:text-white">
+                 <X size={20} />
+              </button>
+              
+              <div className="p-6 border-b border-sfcc-border">
+                 <div className="flex items-center gap-2 mb-2">
+                    <Badge status="info">{selectedAction.type}</Badge>
+                    <span className="text-xs font-mono text-sfcc-secondary">{selectedAction.id}</span>
+                 </div>
+                 <h2 className="text-xl font-bold text-sfcc-primary">{selectedAction.title}</h2>
+              </div>
+
+              <div className="p-6 space-y-4">
+                 <div className="grid grid-cols-2 gap-4 text-xs mb-4">
+                    <div>
+                      <p className="text-sfcc-secondary uppercase tracking-widest text-[10px]">Requestor</p>
+                      <p className="font-bold text-sfcc-primary">{selectedAction.req}</p>
+                    </div>
+                    <div>
+                      <p className="text-sfcc-secondary uppercase tracking-widest text-[10px]">Date Submitted</p>
+                      <p className="font-mono text-sfcc-primary">{selectedAction.date}</p>
+                    </div>
+                 </div>
+
+                 <div className="bg-sfcc-dark/50 border border-sfcc-border p-4 rounded text-sm text-sfcc-secondary">
+                    {selectedAction.details}
+                 </div>
+
+                 <div className="flex gap-3 pt-4">
+                    <button onClick={() => setSelectedAction(null)} className="flex-1 py-3 border border-sfcc-border text-sfcc-secondary hover:text-sfcc-primary uppercase font-bold text-xs rounded hover:bg-sfcc-dark transition-colors">
+                       Return for Review
+                    </button>
+                    <button onClick={() => setSelectedAction(null)} className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white uppercase font-bold text-xs rounded shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 transition-colors">
+                       <FileSignature size={16} />
+                       Sign & Approve
+                    </button>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* --- View All Actions Modal --- */}
+      {showAllActions && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setShowAllActions(false)}></div>
+           <div className="relative bg-sfcc-panel border border-sfcc-border w-full max-w-4xl max-h-[80vh] flex flex-col rounded-sm shadow-2xl animate-in zoom-in-95 duration-200">
+              <div className="flex justify-between items-center p-6 border-b border-sfcc-border">
+                 <h2 className="text-xl font-bold text-sfcc-primary uppercase tracking-wider flex items-center gap-3">
+                   <FileCheck size={24} className="text-sfcc-accent" />
+                   Pending Action Queue
+                 </h2>
+                 <button onClick={() => setShowAllActions(false)} className="text-sfcc-secondary hover:text-white">
+                    <X size={20} />
+                 </button>
+              </div>
+              
+              <div className="overflow-y-auto p-6">
+                 <table className="w-full text-left text-sm">
+                    <thead>
+                       <tr className="border-b border-sfcc-border text-sfcc-secondary font-mono text-xs uppercase tracking-wider">
+                          <th className="pb-3 pl-2">ID</th>
+                          <th className="pb-3">Action Item</th>
+                          <th className="pb-3">Type</th>
+                          <th className="pb-3">Unit</th>
+                          <th className="pb-3">Date</th>
+                          <th className="pb-3 text-right pr-2">Action</th>
+                       </tr>
+                    </thead>
+                    <tbody className="divide-y divide-sfcc-border">
+                       {ACTION_ITEMS.map((item, i) => (
+                          <tr key={i} className="hover:bg-sfcc-dark/50 transition-colors">
+                             <td className="py-3 pl-2 font-mono text-sfcc-secondary">{item.id}</td>
+                             <td className="py-3 font-bold text-sfcc-primary">{item.title}</td>
+                             <td className="py-3"><Badge status="neutral">{item.type}</Badge></td>
+                             <td className="py-3 font-mono text-sfcc-secondary">{item.req}</td>
+                             <td className="py-3 font-mono text-sfcc-secondary">{item.date}</td>
+                             <td className="py-3 text-right pr-2">
+                                <button 
+                                  onClick={() => { setShowAllActions(false); setSelectedAction(item); }}
+                                  className="text-[10px] font-bold uppercase text-sfcc-accent border border-sfcc-border hover:bg-sfcc-accent hover:text-white px-3 py-1.5 rounded transition-colors"
+                                >
+                                   Review
+                                </button>
+                             </td>
+                          </tr>
+                       ))}
+                    </tbody>
+                 </table>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* --- Governance Details Modal --- */}
+      {activeGovernanceModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+           <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setActiveGovernanceModal(null)}></div>
+           <div className="relative bg-sfcc-panel border border-sfcc-border w-full max-w-2xl max-h-[80vh] flex flex-col rounded-sm shadow-2xl animate-in zoom-in-95 duration-200">
+              <div className="flex justify-between items-center p-6 border-b border-sfcc-border">
+                 <h2 className="text-xl font-bold text-sfcc-primary uppercase tracking-wider flex items-center gap-3">
+                   {activeGovernanceModal === 'archive' && <Archive className="text-sfcc-accent" />}
+                   {activeGovernanceModal === 'playbook' && <BookOpen className="text-sfcc-accent" />}
+                   {activeGovernanceModal === 'bylaws' && <Gavel className="text-sfcc-accent" />}
+                   
+                   {activeGovernanceModal === 'archive' && "Official Archive"}
+                   {activeGovernanceModal === 'playbook' && "Operational Playbook"}
+                   {activeGovernanceModal === 'bylaws' && "Organizational Bylaws"}
+                 </h2>
+                 <button onClick={() => setActiveGovernanceModal(null)} className="text-sfcc-secondary hover:text-white">
+                    <X size={20} />
+                 </button>
+              </div>
+              
+              <div className="overflow-y-auto p-6 scroll-smooth">
+                 {renderGovernanceContent()}
+              </div>
+
+              <div className="p-4 border-t border-sfcc-border bg-sfcc-dark/50 text-right">
+                  <button onClick={() => setActiveGovernanceModal(null)} className="text-xs font-bold uppercase text-sfcc-secondary hover:text-white px-4 py-2 border border-sfcc-border rounded hover:bg-sfcc-panel transition-colors">
+                     Close Viewer
+                  </button>
+              </div>
+           </div>
+        </div>
+      )}
+
     </div>
   );
 };

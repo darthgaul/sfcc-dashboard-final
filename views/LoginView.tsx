@@ -17,7 +17,7 @@ const MOCK_USERS: Record<string, User> = {
   'auditor': {
     id: 'u-002', username: 'auditor', name: 'Ext. Audit Firm', role: UserRole.EXTERNAL_AUDITOR, accessLevel: 'L5',
   },
-  // 3. Exec Staff
+  // 3. Exec Staff (GOD MODE)
   'exec': {
     id: 'u-003', username: 'exec', name: 'Gen. A. Smith', role: UserRole.EXECUTIVE_STAFF, accessLevel: 'L5',
   },
@@ -86,83 +86,35 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
     setError(null);
     setStatusText('INITIATING HANDSHAKE...');
 
-    // Simulate network delay for effect
-    setTimeout(async () => {
+    // Frontend-only Mock Authentication logic
+    setTimeout(() => {
       setStatusText('VERIFYING CREDENTIALS...');
       
-      try {
-        // Authenticate with Real Backend
-        // Ensuring the endpoint is exactly /api/login
-        const response = await fetch('https://sfcc-dashboard-final.onrender.com/api/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // Mapping username input to email field as expected by backend
-          body: JSON.stringify({ email: username, password: password }),
-        });
+      const userKey = username.toLowerCase();
+      
+      if (MOCK_USERS[userKey] && password === 'password') {
+        const mockUser = MOCK_USERS[userKey];
+        
+        // Create a mock token for local session consistency
+        const mockToken = `mock-jwt-token-${Date.now()}`;
+        localStorage.setItem('token', mockToken);
 
-        const data = await response.json();
+        setStatusText('ACCESS GRANTED. ESTABLISHING SESSION...');
+        
+        const hydratedUser = hydrateUserPermissions(mockUser);
+        
+        // Save user to storage so App.tsx can persist session
+        localStorage.setItem('user', JSON.stringify(hydratedUser));
+        
+        // Slight delay for visual effect of "loading" the dashboard
+        setTimeout(() => {
+          onLogin(hydratedUser);
+        }, 500);
 
-        if (response.ok) {
-          // Store the JWT token as requested
-          localStorage.setItem('token', data.token);
-
-          setStatusText('ACCESS GRANTED. ESTABLISHING SESSION...');
-          
-          // Parse user details from response
-          const backendUser = data.user || {};
-          // Support both `role` and `user_role` properties, default to cadet if missing
-          const rawRole = backendUser.user_role || backendUser.role || 'cadet_member';
-          
-          // Helper to map backend string roles to Frontend Enums
-          const mapRole = (r: string): UserRole => {
-             const normalized = r.toLowerCase();
-             
-             // Admin / Exec Mapping
-             if (normalized === 'admin' || normalized.includes('exec')) return UserRole.EXECUTIVE_STAFF;
-             
-             // Other Roles
-             if (normalized.includes('board')) return UserRole.BOARD_OF_DIRECTORS;
-             if (normalized.includes('auditor')) return UserRole.EXTERNAL_AUDITOR;
-             if (normalized.includes('cfo') || normalized.includes('treasurer')) return UserRole.CFO_TREASURER;
-             if (normalized.includes('support')) return UserRole.SUPPORT_STAFF;
-             if (normalized.includes('regional')) return UserRole.REGIONAL_COMMANDER;
-             if (normalized.includes('squadron')) return UserRole.SQUADRON_COMMANDER;
-             if (normalized.includes('reviewer') || normalized.includes('instructor')) return UserRole.REVIEWER_INSTRUCTOR;
-             if (normalized.includes('parent')) return UserRole.PARENT_GUARDIAN;
-             
-             return UserRole.CADET_MEMBER;
-          };
-
-          const userRole = mapRole(rawRole);
-          
-          setTimeout(() => {
-            // Use MOCK_USERS for rich UI data if available and matches username, otherwise fallback to backend data
-            const uiUser = MOCK_USERS[username] || {
-              id: String(backendUser.user_id || backendUser.id || 'u-real'),
-              username: backendUser.username || username,
-              name: backendUser.username || username, // Fallback name
-              role: userRole, // Use mapped role from backend
-              accessLevel: (userRole === UserRole.EXECUTIVE_STAFF || userRole === UserRole.BOARD_OF_DIRECTORS) ? 'L5' : 'L1',
-            };
-            
-            const hydratedUser = hydrateUserPermissions(uiUser);
-            
-            // Fix: Save user to storage so App.tsx can persist session
-            // We save the hydratedUser because it contains the properly mapped UserRole and permissions
-            localStorage.setItem('user', JSON.stringify(hydratedUser));
-            
-            onLogin(hydratedUser);
-          }, 800);
-        } else {
-          throw new Error(data.message || 'Invalid credentials');
-        }
-      } catch (err) {
+      } else {
         setLoading(false);
         setError('INVALID CREDENTIALS');
         setStatusText('ACCESS DENIED. EVENT LOGGED.');
-        console.error('Login error:', err);
       }
     }, 800);
   };
@@ -289,10 +241,10 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
           {/* Demo Hint */}
           <div className="mt-8 text-center">
              <div className="inline-block text-left bg-[#252525]/50 border border-sfcc-border p-4 rounded text-[10px] text-sfcc-secondary font-mono">
-                <p className="font-bold text-sfcc-secondary mb-2 uppercase border-b border-sfcc-border pb-1">Demo Credentials (pwd: password)</p>
+                <p className="font-bold text-sfcc-secondary mb-2 uppercase border-b border-sfcc-border pb-1">Demo Mode (pwd: password)</p>
                 <div className="grid grid-cols-2 gap-x-8 gap-y-1">
+                   <span>Exec: <span className="text-[#3684ca]">exec</span> (GOD MODE)</span>
                    <span>Board: <span className="text-[#3684ca]">board</span></span>
-                   <span>Exec: <span className="text-[#3684ca]">exec</span></span>
                    <span>Regional: <span className="text-[#3684ca]">regional</span></span>
                    <span>Squadron: <span className="text-[#3684ca]">squadron</span></span>
                    <span>Cadet: <span className="text-[#3684ca]">cadet</span></span>

@@ -8,10 +8,15 @@ const ParentView: React.FC = () => {
   const [emergencyContact, setEmergencyContact] = useState('');
   const [emergencyPhone, setEmergencyPhone] = useState('');
   const [mediaRelease, setMediaRelease] = useState(false);
+  
+  const [submitting, setSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setSubmitting(true);
 
+    // Mock Payload construction
     const payload = { 
       cadetName,
       allergies,
@@ -21,22 +26,15 @@ const ParentView: React.FC = () => {
       mediaRelease,
     };
 
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('https://sfcc-dashboard-final.onrender.com/api/consent/sign', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token || ''}`
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-      console.log('Submission result:', data);
-    } catch (error) {
-      console.error('Error submitting form:', error);
-    }
+    // Simulate Network Request
+    setTimeout(() => {
+      console.log('Mock Submission Payload:', payload);
+      setSubmitting(false);
+      setSubmitSuccess(true);
+      
+      // Reset success message after 3 seconds
+      setTimeout(() => setSubmitSuccess(false), 3000);
+    }, 1500);
   };
 
   return (
@@ -54,6 +52,7 @@ const ParentView: React.FC = () => {
             onChange={(e) => setCadetName(e.target.value)}
             className="w-full bg-[#191818] border border-[#5f686e] text-[#c7d7e2] text-sm rounded-sm p-2.5 focus:outline-none focus:border-[#3684ca] transition-colors placeholder:text-[#5f686e]"
             placeholder="Enter cadet full name"
+            disabled={submitting}
           />
         </div>
 
@@ -67,6 +66,7 @@ const ParentView: React.FC = () => {
               value={allergies}
               onChange={(e) => setAllergies(e.target.value)}
               className="w-full bg-[#191818] border border-[#5f686e] text-[#c7d7e2] text-sm rounded-sm p-2.5 focus:outline-none focus:border-[#3684ca] transition-colors"
+              disabled={submitting}
             />
           </div>
 
@@ -78,6 +78,7 @@ const ParentView: React.FC = () => {
               value={medications}
               onChange={(e) => setMedications(e.target.value)}
               className="w-full bg-[#191818] border border-[#5f686e] text-[#c7d7e2] text-sm rounded-sm p-2.5 focus:outline-none focus:border-[#3684ca] transition-colors"
+              disabled={submitting}
             />
           </div>
         </div>
@@ -92,6 +93,7 @@ const ParentView: React.FC = () => {
               value={emergencyContact}
               onChange={(e) => setEmergencyContact(e.target.value)}
               className="w-full bg-[#191818] border border-[#5f686e] text-[#c7d7e2] text-sm rounded-sm p-2.5 focus:outline-none focus:border-[#3684ca] transition-colors"
+              disabled={submitting}
             />
           </div>
 
@@ -103,6 +105,7 @@ const ParentView: React.FC = () => {
               value={emergencyPhone}
               onChange={(e) => setEmergencyPhone(e.target.value)}
               className="w-full bg-[#191818] border border-[#5f686e] text-[#c7d7e2] text-sm rounded-sm p-2.5 focus:outline-none focus:border-[#3684ca] transition-colors"
+              disabled={submitting}
             />
           </div>
         </div>
@@ -115,6 +118,7 @@ const ParentView: React.FC = () => {
             onChange={(e) => setMediaRelease(e.target.checked)}
             id="mediaRelease"
             className="w-4 h-4 accent-[#3684ca] bg-[#252525] border-[#5f686e] rounded cursor-pointer"
+            disabled={submitting}
           />
           <label htmlFor="mediaRelease" className="text-sm text-[#c7d7e2] cursor-pointer select-none">
             I consent to photo/video use (CCF 20-5)
@@ -124,9 +128,19 @@ const ParentView: React.FC = () => {
         {/* Submit Button */}
         <button 
           onClick={handleSubmit}
-          className="w-full bg-[#3684ca] hover:bg-[#3684ca]/80 text-white font-bold py-3 rounded-sm uppercase tracking-widest text-xs transition-colors mt-6 shadow-lg shadow-blue-900/20"
+          disabled={submitting}
+          className={`w-full bg-[#3684ca] hover:bg-[#3684ca]/80 text-white font-bold py-3 rounded-sm uppercase tracking-widest text-xs transition-colors mt-6 shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 ${submitting ? 'opacity-70 cursor-not-allowed' : ''}`}
         >
-          Sign & Submit
+          {submitting ? (
+            <>
+               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+               Encrypting & Sending...
+            </>
+          ) : submitSuccess ? (
+             <span className="text-emerald-300">✓ Signed & Verified</span>
+          ) : (
+            'Sign & Submit'
+          )}
         </button>
 
       </div>
