@@ -26,7 +26,9 @@ import {
   Brain,
   Wifi,
   Activity,
-  Lock
+  Lock,
+  Database,
+  Layout
 } from 'lucide-react';
 import ConstellationBackground from '../components/ConstellationBackground';
 import SquadronGlobe, { SquadronLocation } from '../components/SquadronGlobe';
@@ -273,8 +275,9 @@ const PublicWebsite: React.FC<PublicWebsiteProps> = ({ onEnterCommand }) => {
           </div>
         </section>
 
-        {/* --- 3D Globe Locator --- */}
+        {/* --- 3D Globe Locator (Replaced Radar) --- */}
         <section id="locate" className="py-20 bg-[#0f0f11] relative z-10">
+           
            <div className="max-w-7xl mx-auto px-6">
               <div className="flex flex-col lg:flex-row justify-between items-end mb-8 gap-6">
                   <div>
@@ -298,8 +301,9 @@ const PublicWebsite: React.FC<PublicWebsiteProps> = ({ onEnterCommand }) => {
                   </div>
               </div>
 
-              {/* TACTICAL VIEWPORT FRAME */}
+              {/* TACTICAL VIEWPORT FRAME - Force dimensions */}
               <div className="relative w-full h-[600px] border border-[#3684ca]/20 bg-[#0f0f11] rounded-sm overflow-hidden shadow-2xl">
+                  
                   {/* Grid Lines Overlay */}
                   <div className="absolute inset-0 pointer-events-none z-10" 
                        style={{ backgroundImage: 'linear-gradient(#3684ca22 1px, transparent 1px), linear-gradient(90deg, #3684ca22 1px, transparent 1px)', backgroundSize: '40px 40px', opacity: 0.1 }}>
@@ -380,10 +384,10 @@ const PublicWebsite: React.FC<PublicWebsiteProps> = ({ onEnterCommand }) => {
         </section>
 
         {/* --- Equipping The Next Generation (Replaced Tech Section) --- */}
-        <section id="tech" className="py-40 pb-60 bg-[#0f0f11] relative z-10 overflow-hidden min-h-[90vh] flex items-center">
+        <section id="tech" className="py-40 bg-[#0f0f11] relative z-10 overflow-hidden min-h-[80vh] flex items-center">
           <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#1a1a2e] to-[#0f0f11] opacity-50 pointer-events-none"></div>
           
-          <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               
               {/* Text Content */}
@@ -414,7 +418,7 @@ const PublicWebsite: React.FC<PublicWebsiteProps> = ({ onEnterCommand }) => {
                  </div>
               </div>
 
-              {/* Interactive HUD Visual */}
+              {/* Interactive HUD Visual (Systems Diagnostic) */}
               <div className="order-1 lg:order-2 relative perspective-[2000px]">
                  {/* Main Holographic Container */}
                  <div className="bg-[#191818]/80 backdrop-blur-md border border-[#3684ca]/30 p-1 rounded-lg shadow-[0_0_50px_rgba(54,132,202,0.15)] relative group transform transition-transform duration-500 hover:rotate-y-2 hover:rotate-x-2">
@@ -503,7 +507,7 @@ const PublicWebsite: React.FC<PublicWebsiteProps> = ({ onEnterCommand }) => {
         </section>
 
         {/* --- Call To Action (Split) --- */}
-        <section id="join" className="py-24 bg-[#252525] text-center px-6 relative z-10 border-t border-[#5f686e]/20">
+        <section id="join" className="py-24 bg-[#252525] text-center px-6 relative z-10 border-t border-[#5f686e]/20 pb-48">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
              <div className="bg-[#191818] border border-[#5f686e]/30 p-10 rounded-sm relative overflow-hidden group hover:border-[#3684ca] transition-all">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#3684ca] blur-[80px] opacity-10 group-hover:opacity-20 transition-opacity"></div>

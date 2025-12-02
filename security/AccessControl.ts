@@ -48,7 +48,6 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.MANAGE_WORKFLOWS,
   ],
   [UserRole.REGIONAL_COMMANDER]: [
-    Permission.VIEW_HQ_DASHBOARD, // Filtered view in practice
     Permission.VIEW_REGIONAL_DASHBOARD,
     Permission.ISSUE_CORRECTIVE_ORDER,
   ],
