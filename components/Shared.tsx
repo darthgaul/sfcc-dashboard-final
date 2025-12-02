@@ -52,16 +52,27 @@ export const MetricCard: React.FC<{
   trend?: 'up' | 'down' | 'neutral';
   trendValue?: string;
   alert?: boolean;
-}> = ({ icon: Icon, label, value, subtext, trend, trendValue, alert }) => (
+  color?: 'red' | 'green' | 'blue' | 'default';
+}> = ({ icon: Icon, label, value, subtext, trend, trendValue, alert, color }) => {
+  
+  const isRed = alert || color === 'red';
+  const isGreen = color === 'green';
+  
+  return (
   <Card 
-    variant={alert ? 'default' : 'glass'}
-    className={`group hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(54,132,202,0.15)] transition-all duration-300 ${alert ? 'border-red-500/50 bg-red-900/10' : ''}`}
+    variant={(isRed || isGreen) ? 'default' : 'glass'}
+    className={`group hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(54,132,202,0.15)] transition-all duration-300 ${
+      isRed ? 'border-red-500/50 bg-red-900/10' : 
+      isGreen ? 'border-emerald-500/50 bg-emerald-900/10' : ''
+    }`}
   >
     <div className="flex items-start justify-between relative z-10">
       <div className={`p-3 rounded-md transition-colors duration-300 ${
-        alert 
+        isRed 
           ? 'bg-red-500/20 text-red-500' 
-          : 'bg-[#3684ca]/10 text-[#3684ca] group-hover:bg-[#3684ca] group-hover:text-white'
+          : isGreen
+            ? 'bg-emerald-500/20 text-emerald-500'
+            : 'bg-[#3684ca]/10 text-[#3684ca] group-hover:bg-[#3684ca] group-hover:text-white'
       }`}>
         <Icon size={24} />
       </div>
@@ -81,7 +92,11 @@ export const MetricCard: React.FC<{
     </div>
     
     <div className="mt-4">
-      <h2 className={`text-3xl font-bold font-mono tracking-tight ${alert ? 'text-red-500' : 'text-white'}`}>
+      <h2 className={`text-3xl font-bold font-mono tracking-tight ${
+        isRed ? 'text-red-500' : 
+        isGreen ? 'text-emerald-500' : 
+        'text-white'
+      }`}>
         {value}
       </h2>
       <div className="flex items-end justify-between mt-1">
@@ -92,10 +107,12 @@ export const MetricCard: React.FC<{
     
     {/* Background Glow Effect */}
     <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full blur-[40px] opacity-20 transition-opacity duration-500 group-hover:opacity-40 ${
-      alert ? 'bg-red-500' : 'bg-[#3684ca]'
+      isRed ? 'bg-red-500' : 
+      isGreen ? 'bg-emerald-500' : 
+      'bg-[#3684ca]'
     }`}></div>
   </Card>
-);
+)};
 
 export const Badge: React.FC<{ status: 'success' | 'warning' | 'danger' | 'info' | 'neutral'; children: React.ReactNode }> = ({ status, children }) => {
   const styles = {
